@@ -1,7 +1,6 @@
 package io.github.tdh8316.hwp_editor.compiler
 
 import kr.dogfoot.hwplib.`object`.HWPFile
-import kr.dogfoot.hwplib.`object`.bodytext.paragraph.Paragraph
 import kr.dogfoot.hwplib.tool.blankfilemaker.BlankFileMaker
 import kr.dogfoot.hwplib.writer.HWPWriter
 import java.io.ByteArrayOutputStream
