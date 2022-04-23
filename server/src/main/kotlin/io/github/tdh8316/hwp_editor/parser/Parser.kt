@@ -9,9 +9,9 @@ import kr.dogfoot.hwplib.reader.HWPReader
 import java.io.ByteArrayInputStream
 
 class HWPParser {
-    fun parseHwp(data: ByteArray): HWPDataModel {
+    fun parseDocument(stream: ByteArrayInputStream): HWPDataModel {
         // HWP 객체 생성
-        val hwpFile: HWPFile = HWPReader.fromInputStream(ByteArrayInputStream(data))
+        val hwpFile: HWPFile = HWPReader.fromInputStream(stream)
         val parsed = HWPDataModel()
 
         // DocInfo 파싱
@@ -43,7 +43,10 @@ class HWPParser {
                 currentSection.paragraphs.add(paragraph.normalString)
 
                 for (shape in paragraph.charShape.positonShapeIdPairList) {
-                    val posShapePair = arrayListOf(shape.position, shape.shapeId)
+                    val posShapePair = arrayListOf(
+                        shape.position,
+                        shape.shapeId,
+                    )
                     currentSection.shapes.add(posShapePair)
                 }
             }
