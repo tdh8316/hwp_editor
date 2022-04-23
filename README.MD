@@ -9,3 +9,5 @@ Open Source cross-platform HANCOM Office document editor.
 ## License
 
 Licensed under the [GPL-3.0 License](LICENSE)
+
+Copyright 2022 `Donghyeok Tak`
