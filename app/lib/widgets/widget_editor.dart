@@ -4,7 +4,7 @@ import 'package:hwp_editor_app/providers/provider_editor.dart';
 import 'package:provider/provider.dart';
 
 class EditorWidget extends StatelessWidget {
-  EditorWidget({Key? key}) : super(key: key);
+  EditorWidget({Key? key, required this.docData}) : super(key: key);
 
   final Map<String, dynamic> test = {
     "docInfo": {
@@ -56,10 +56,12 @@ class EditorWidget extends StatelessWidget {
     }
   };
 
+  final Map<String, dynamic>  docData;
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<EditorProvider>(
-      create: (BuildContext context) => EditorProvider(hwpDocument: test),
+      create: (BuildContext context) => EditorProvider(hwpDocument: docData),
       builder: (BuildContext context, _) {
         return Padding(
           padding: const EdgeInsets.all(32),
@@ -73,7 +75,7 @@ class EditorWidget extends StatelessWidget {
   }
 
   Widget _bodyTextBuilder(BuildContext context) {
-    final List<Map<String, dynamic>> sections =
+    final List sections =
         context.watch<EditorProvider>().sections;
     return ListView.builder(
       shrinkWrap: true,
@@ -89,7 +91,7 @@ class EditorWidget extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
-      itemCount: (section["paragraphs"] as List<String>).length,
+      itemCount: (section["paragraphs"] as List).length,
       itemBuilder: (BuildContext context, int paragraphIndex) {
         return _textBuilder(context, section, paragraphIndex);
       },

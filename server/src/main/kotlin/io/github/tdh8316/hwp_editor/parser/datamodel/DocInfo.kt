@@ -27,5 +27,6 @@ data class CharShape(
         0, // 기호
         0, // 사용자 정의
     ),
-    // val baseSize: Int = 9600,
+    val baseSize: Int,
+    val charColor: Long,
 )

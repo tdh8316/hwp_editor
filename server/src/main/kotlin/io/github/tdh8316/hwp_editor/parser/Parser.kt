@@ -29,6 +29,8 @@ class HWPParser {
                     faceNameIds = charShape.faceNameIds.array.toCollection(
                         ArrayList()
                     ),
+                    baseSize = charShape.baseSize,
+                    charColor = charShape.charColor.value,
                 ),
             )
         }

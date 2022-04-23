@@ -5,8 +5,8 @@ class EditorProvider extends ChangeNotifier {
 
   final Map<String, dynamic> hwpDocument;
 
-  List<Map<String, dynamic>> get sections =>
-      hwpDocument["bodyText"]["sections"] as List<Map<String, dynamic>>;
+  List get sections =>
+      hwpDocument["bodyText"]["sections"] as List;
 
   void setParagraph(Map<String, dynamic > section, int paragraphIndex, String paragraph) {
     section["paragraphs"][paragraphIndex] = paragraph;

@@ -34,8 +34,11 @@ class ContentsController {
     /// 문서를 파싱해서 json 문자열로 반환
     @GetMapping("parse/{byteArrayData}")
     fun parse(
-        @PathVariable(value = "byteArrayData") byteArrayData: ByteArray,
+        @PathVariable(value = "byteArrayData") _encodedByteArrayData: String,
     ): ResponseEntity<String> {
+        val byteArrayData = Base64.decodeBase64(
+            _encodedByteArrayData.replace("_", "/"),
+        )
         // 인자로 전달된 바이트스트림으로 입력 스트림 생성
         val stream = ByteArrayInputStream(byteArrayData)
 

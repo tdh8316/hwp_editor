@@ -14,8 +14,12 @@ class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
+        val bytearray = File("../tests/richtext.hwp").readBytes()
+
+        println(Base64.encodeBase64String(bytearray))
+
         val parsed = HWPParser().parseDocument(
-            stream = ByteArrayInputStream(File("../tests/plaintext.hwp").readBytes())
+            stream = ByteArrayInputStream(bytearray)
         )
         val gson = Gson()
         // println(gson.toJson(parsed).prettyPrint())
@@ -116,17 +120,17 @@ class HwpEditorApplicationTests {
 //        println(Base64.decodeBase64(b64).toString(Charsets.UTF_8))
 
         // json 문자열에서 hwp 데이터 모델 생성
-        val parsedDocument: HWPDataModel = Gson().fromJson(
-            jsonString,
-            HWPDataModel::class.java,
-        )
-
-        // 문서 출력스트림 생성
-        val documentOutputStream: ByteArrayOutputStream = Writer().writeDocument(
-            parsedDocument,
-        )
-
-        File("../tests/test.hwp").writeBytes(documentOutputStream.toByteArray())
+//        val parsedDocument: HWPDataModel = Gson().fromJson(
+//            jsonString,
+//            HWPDataModel::class.java,
+//        )
+//
+//        // 문서 출력스트림 생성
+//        val documentOutputStream: ByteArrayOutputStream = Writer().writeDocument(
+//            parsedDocument,
+//        )
+//
+//        File("../tests/test.hwp").writeBytes(documentOutputStream.toByteArray())
 
 
     }
