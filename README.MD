@@ -2,6 +2,8 @@
 
 Open Source cross-platform HANCOM Office document editor.
 
+Please read [documents(Korean)](docs/index.md)
+
 ## Acknowledgements
 
 - [hwplib](https://github.com/neolord0/hwplib)
