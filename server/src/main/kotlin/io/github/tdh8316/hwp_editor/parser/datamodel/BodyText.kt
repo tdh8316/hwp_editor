@@ -8,8 +8,13 @@ data class BodyTextDataModel(
 
 data class SectionDataModel(
     val paragraphs: MutableList<String>,
-    val shapes: MutableList<ArrayList<Long>>,
+    val charShapes: MutableList<ArrayList<Long>>,
+    val paraShapeIds: MutableList<Int>,
 ) {
-    constructor() : this(paragraphs = mutableListOf(), shapes = mutableListOf())
+    constructor() : this(
+        paragraphs = mutableListOf(),
+        charShapes = mutableListOf(),
+        paraShapeIds = mutableListOf(),
+    )
 }
 

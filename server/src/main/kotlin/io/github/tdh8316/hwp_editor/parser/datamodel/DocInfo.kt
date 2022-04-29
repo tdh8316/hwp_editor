@@ -4,10 +4,12 @@ package io.github.tdh8316.hwp_editor.parser.datamodel
 data class DocInfoDataModel(
     val hangulFaceNameList: MutableList<FaceName>,
     val charShapeList: MutableList<CharShape>,
+    val paraShapeList: MutableList<ParaShape>,
 ) {
     constructor() : this(
         hangulFaceNameList = mutableListOf(),
         charShapeList = mutableListOf(),
+        paraShapeList = mutableListOf(),
     )
 }
 
@@ -29,4 +31,9 @@ data class CharShape(
     ),
     val baseSize: Int,
     val charColor: Long,
+)
+
+data class ParaShape(
+    // 정렬: 양쪽=0 왼쪽=1 오른쪽=2 가운데=3 배분=4 나눔=5
+    val alignment: Int,
 )

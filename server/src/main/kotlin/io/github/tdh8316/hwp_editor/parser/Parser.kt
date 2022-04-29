@@ -1,9 +1,6 @@
 package io.github.tdh8316.hwp_editor.parser
 
-import io.github.tdh8316.hwp_editor.parser.datamodel.CharShape
-import io.github.tdh8316.hwp_editor.parser.datamodel.FaceName
-import io.github.tdh8316.hwp_editor.parser.datamodel.HWPDataModel
-import io.github.tdh8316.hwp_editor.parser.datamodel.SectionDataModel
+import io.github.tdh8316.hwp_editor.parser.datamodel.*
 import kr.dogfoot.hwplib.`object`.HWPFile
 import kr.dogfoot.hwplib.reader.HWPReader
 import java.io.ByteArrayInputStream
@@ -15,6 +12,16 @@ class HWPParser {
         val parsed = HWPDataModel()
 
         // DocInfo 파싱
+        parseDocInfo(hwpFile, parsed)
+
+        // bodyText/Section 파싱
+        parseBodyTextSections(hwpFile, parsed)
+
+
+        return parsed
+    }
+
+    private fun parseDocInfo(hwpFile: HWPFile, parsed: HWPDataModel) {
         for (hangulFaceName in hwpFile.docInfo.hangulFaceNameList) {
             parsed.docInfo.hangulFaceNameList.add(
                 FaceName(
@@ -34,27 +41,33 @@ class HWPParser {
                 ),
             )
         }
+        for (paraShape in hwpFile.docInfo.paraShapeList) {
+            parsed.docInfo.paraShapeList.add(
+                ParaShape(
+                    alignment = paraShape.property1.alignment.ordinal
+                )
+            )
+        }
+    }
 
-        // bodyText/Section 파싱
+    private fun parseBodyTextSections(hwpFile: HWPFile, parsed: HWPDataModel) {
         for (section in hwpFile.bodyText.sectionList) {
             // BodyText 에 Section 요소 추가
             val currentSection = SectionDataModel()
-            parsed.bodyText.sections.add(currentSection)
 
             for (paragraph in section.paragraphs) {
                 currentSection.paragraphs.add(paragraph.normalString)
-
                 for (shape in paragraph.charShape.positonShapeIdPairList) {
-                    val posShapePair = arrayListOf(
-                        shape.position,
-                        shape.shapeId,
+                    currentSection.charShapes.add(
+                        arrayListOf(
+                            shape.position,
+                            shape.shapeId,
+                        ),
                     )
-                    currentSection.shapes.add(posShapePair)
                 }
+                currentSection.paraShapeIds.add(paragraph.header.paraShapeId)
             }
+            parsed.bodyText.sections.add(currentSection)
         }
-
-        return parsed
     }
 }
-
