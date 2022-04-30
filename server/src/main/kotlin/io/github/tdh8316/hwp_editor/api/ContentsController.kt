@@ -31,11 +31,12 @@ class ContentsController {
         return ResponseEntity.ok(jsonString)
     }
 
-    /// 문서를 파싱해서 json 문자열로 반환
+    /// 문서를 파싱해서 json 문자열 응답으로 반환하는 컨트롤러
     @GetMapping("parse/{byteArrayData}")
     fun parse(
         @PathVariable(value = "byteArrayData") _encodedByteArrayData: String,
     ): ResponseEntity<String> {
+        // base64 형식의 데이터를 바이트 배열로 변환
         val byteArrayData = Base64.decodeBase64(
             _encodedByteArrayData.replace("_", "/"),
         )
@@ -48,10 +49,11 @@ class ContentsController {
         // 파싱된 문서를 json 문자열로 변환
         val jsonString = Gson().toJson(parsedDocument).prettier()
 
+        // json 문자열 전달
         return ResponseEntity.ok(jsonString)
     }
 
-    /// json 문자열 데이터를 문서로 작성해서 bytearray 로 반환
+    /// json 문자열 데이터를 문서로 작성해서 bytearray 응답으로 반환하는 컨트롤러
     @GetMapping("write/{jsonString}")
     fun write(
         @PathVariable(value = "jsonString") _encodedJsonString: String,
