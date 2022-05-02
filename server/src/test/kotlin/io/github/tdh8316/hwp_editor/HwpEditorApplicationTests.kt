@@ -10,7 +10,7 @@ class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
-        val bytearray = File("../tests/align.hwp").readBytes()
+        val bytearray = File("../tests/complexrichtext.hwp").readBytes()
 
         // println(Base64.encodeBase64String(bytearray))
 
@@ -18,7 +18,11 @@ class HwpEditorApplicationTests {
             stream = ByteArrayInputStream(bytearray)
         )
         val gson = Gson()
-        println(gson.toJson(parsed).prettyPrint())
+        val res = (gson.toJson(parsed).prettyPrint())
+
+        val f = File("../tests/complexrichtext.json")
+        f.createNewFile()
+        f.writeText(res)
 
     }
 

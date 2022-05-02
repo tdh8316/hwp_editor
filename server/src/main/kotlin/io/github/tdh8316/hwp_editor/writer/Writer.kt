@@ -47,7 +47,7 @@ class Writer {
             // 빈 paragraph 가 생기지 않도록 기존 paragraph 한 번 사용
             var defaultParagraph = true
 
-            for ((paragraph, charShape) in section.paragraphs.zip(section.charShapes)) {
+            for ((paragraph, charShapes) in section.paragraphs.zip(section.charShapes)) {
                 // 섹션에 paragraph 추가
                 val currentParagraph = if (!defaultParagraph) {
                     // 기존 paragraph 를 사용한 경우 새 paragraph 추가
@@ -74,7 +74,9 @@ class Writer {
 
                 // 글꼴 참조 추가
                 currentParagraph.createCharShape()
-                currentParagraph.charShape.addParaCharShape(charShape[0], charShape[1])
+                for (charShape in charShapes) {
+                    currentParagraph.charShape.addParaCharShape(charShape[0], charShape[1])
+                }
 
                 currentParagraph.createLineSeg()
                 val lsi = currentParagraph.lineSeg.addNewLineSegItem()

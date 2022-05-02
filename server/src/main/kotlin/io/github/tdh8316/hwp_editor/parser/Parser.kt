@@ -10,7 +10,7 @@ class HWPParser {
     fun parseDocument(stream: ByteArrayInputStream): HWPDataModel {
         // HWP 객체 생성
         val hwpFile: HWPFile = HWPReader.fromInputStream(stream)
-        
+
         // 데이터 모델 생성
         val parsed = HWPDataModel()
 
@@ -19,7 +19,7 @@ class HWPParser {
 
         // bodyText/Section 파싱
         parseBodyTextSections(hwpFile, parsed)
-        
+
         return parsed
     }
 
@@ -34,7 +34,7 @@ class HWPParser {
                 ),
             )
         }
-        
+
         // 문자 모양 정보 생성
         for (charShape in hwpFile.docInfo.charShapeList) {
             parsed.docInfo.charShapeList.add(
@@ -47,7 +47,7 @@ class HWPParser {
                 ),
             )
         }
-        
+
         // 문단 모양 정보 생성
         for (paraShape in hwpFile.docInfo.paraShapeList) {
             parsed.docInfo.paraShapeList.add(
@@ -66,17 +66,28 @@ class HWPParser {
 
             for (paragraph in section.paragraphs) {
                 currentSection.paragraphs.add(paragraph.normalString)
+                val currentCharShapes = mutableListOf<ArrayList<Long>>()
                 for (shape in paragraph.charShape.positonShapeIdPairList) {
-                    currentSection.charShapes.add(
-                        arrayListOf(
-                            shape.position,
-                            shape.shapeId,
-                        ),
-                    )
+                    if (currentSection.charShapes.isEmpty()) {
+                        currentCharShapes.add(
+                            arrayListOf(
+                                shape.position - (if (shape.position != 0L) 16 else 0),
+                                shape.shapeId,
+                            )
+                        )
+                    } else {
+                        currentCharShapes.add(
+                            arrayListOf(
+                                shape.position,
+                                shape.shapeId,
+                            )
+                        )
+                    }
                 }
+                currentSection.charShapes.add(currentCharShapes)
                 currentSection.paraShapeIds.add(paragraph.header.paraShapeId)
             }
-            
+
             // BodyText 에 Section 요소 추가
             parsed.bodyText.sections.add(currentSection)
         }
