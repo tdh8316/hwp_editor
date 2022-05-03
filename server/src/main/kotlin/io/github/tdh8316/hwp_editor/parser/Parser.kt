@@ -68,21 +68,16 @@ class HWPParser {
                 currentSection.paragraphs.add(paragraph.normalString)
                 val currentCharShapes = mutableListOf<ArrayList<Long>>()
                 for (shape in paragraph.charShape.positonShapeIdPairList) {
-                    if (currentSection.charShapes.isEmpty()) {
-                        currentCharShapes.add(
-                            arrayListOf(
-                                shape.position - (if (shape.position != 0L) 16 else 0),
-                                shape.shapeId,
-                            )
+                    currentCharShapes.add(
+                        arrayListOf(
+                            shape.position - (if (shape.position != 0L && currentSection.charShapes.isNotEmpty()) {
+                                16
+                            } else {
+                                0
+                            }),
+                            shape.shapeId,
                         )
-                    } else {
-                        currentCharShapes.add(
-                            arrayListOf(
-                                shape.position,
-                                shape.shapeId,
-                            )
-                        )
-                    }
+                    )
                 }
                 currentSection.charShapes.add(currentCharShapes)
                 currentSection.paraShapeIds.add(paragraph.header.paraShapeId)
