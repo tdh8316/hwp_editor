@@ -17,14 +17,11 @@ class EditorWidget extends StatelessWidget {
         final EditorProvider read = context.read<EditorProvider>();
         return Padding(
           padding: const EdgeInsets.all(32),
-          child: Container(
-            child: MediaQuery(
-              data: MediaQueryData(
-                textScaleFactor: watch.textScaleFactor,
-              ),
-              child: _buildSections(context),
+          child: MediaQuery(
+            data: MediaQueryData(
+              textScaleFactor: watch.textScaleFactor,
             ),
-            color: Colors.white,
+            child: _buildSections(context),
           ),
         );
       },

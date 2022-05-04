@@ -1,5 +1,10 @@
+import 'dart:ui';
+
 import 'package:collection/collection.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart'
+    show TextField, Material, InputDecoration, InputBorder;
+import 'package:hwp_editor_app/models/model_hwp.dart';
 import 'package:hwp_editor_app/providers/provider_editor.dart';
 import 'package:provider/provider.dart';
 
@@ -21,23 +26,37 @@ class ParagraphWidget extends StatelessWidget {
     final EditorProvider read = context.read<EditorProvider>();
 
     final FocusNode focusNode = FocusNode();
+    final Map paraShape =
+        watch.hwpDocument["docInfo"]["paraShapeList"][paragraph["paraShapeId"]];
     final ParagraphController paragraphController = ParagraphController(
       text: paragraph["text"],
       charShapes: (paragraph["charShapes"] as List<dynamic>)
           .map((list) => (list as List).map((value) => value as int).toList())
           .toList(),
+      paraShape: paraShape,
     );
-    final Map paraShape =
-        watch.hwpDocument["docInfo"]["paraShapeList"][paragraph["paraShapeId"]];
 
-    return Align(
-      alignment: Alignment.topCenter,
-      child: EditableText(
-        backgroundCursorColor: Colors.black,
+    return Material(
+      child: TextField(
         controller: paragraphController,
-        style: watch.currentTextStyle,
-        cursorColor: Colors.black,
         focusNode: focusNode,
+        decoration: const InputDecoration(
+          hintText: null,
+          fillColor: Colors.white,
+          filled: true,
+          isDense: true,
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.only(bottom: 6),
+        ),
+        style: watch.currentTextStyle,
+        strutStyle: StrutStyle(
+          height: paraShape["lineSpace"] / 100.0,
+        ),
+        smartQuotesType: SmartQuotesType.enabled,
+        selectionHeightStyle: BoxHeightStyle.max,
+        textAlign: getTextAlign(paraShape["alignment"]),
+        maxLines: null,
+        cursorColor: Colors.black,
       ),
     );
   }
@@ -47,9 +66,11 @@ class ParagraphController extends TextEditingController {
   ParagraphController({
     String? text,
     required this.charShapes,
+    required this.paraShape,
   }) : super(text: text);
 
   final List<List<int>> charShapes;
+  final Map paraShape;
 
   @override
   TextSpan buildTextSpan({
@@ -72,9 +93,14 @@ class ParagraphController extends TextEditingController {
     for (List pair in IterableZip([matches, charShapes])) {
       children.add(
         TextSpan(
-          text: pair[0],
-          style: context.read<EditorProvider>().getTextStyleFromCharShape(
-                pair[1][1],
+          text: pair[0] as String,
+          style: context
+              .read<EditorProvider>()
+              .getTextStyleFromCharShape(
+                pair[1][1] as int,
+              )
+              .copyWith(
+                height: paraShape["lineSpace"] / 100.0,
               ),
         ),
       );
