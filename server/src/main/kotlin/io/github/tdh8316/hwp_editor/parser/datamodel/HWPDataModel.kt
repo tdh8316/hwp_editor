@@ -5,5 +5,8 @@ data class HWPDataModel(
     val docInfo: DocInfoDataModel,
     val bodyText: BodyTextDataModel,
 ) {
-    constructor() : this(docInfo = DocInfoDataModel(), bodyText = BodyTextDataModel())
+    constructor() : this(
+        docInfo = DocInfoDataModel(),
+        bodyText = BodyTextDataModel(),
+    )
 }

@@ -29,69 +29,10 @@ class Writer {
 
     /// 문서 본문을 저장
     private fun writeDocumentBody(document: HWPDataModel, hwpFile: HWPFile) {
-        // 문서에는 최소 1개 이상의 섹션이 존재하므로
-        // 빈 섹션이 남지 않도록 기존의 섹션 한 번 사용
-        var defaultSection = true
 
         for (section in document.bodyText.sections) {
             // 새로운 섹션 생성
-            val currentSection = if (!defaultSection) {
-                // 기존 섹션을 사용한 경우 새 섹션 추가
-                hwpFile.bodyText.addNewSection()
-            } else {
-                // 기존 섹션이 사용되지 않은 경우 사용
-                hwpFile.bodyText.sectionList.last()
-            }
 
-            // 섹션에는 최소 1개 이상의 paragraph 가 존재하므로
-            // 빈 paragraph 가 생기지 않도록 기존 paragraph 한 번 사용
-            var defaultParagraph = true
-
-            for ((paragraph, charShapes) in section.paragraphs.zip(section.charShapes)) {
-                // 섹션에 paragraph 추가
-                val currentParagraph = if (!defaultParagraph) {
-                    // 기존 paragraph 를 사용한 경우 새 paragraph 추가
-                    currentSection.addNewParagraph()
-                } else {
-                    // 기존 paragraph 가 사용되지 않은 경우 사용
-                    currentSection.paragraphs.last()
-                }
-
-                // paragraph 에 헤더 추가
-                val header = currentParagraph.header
-                header.isLastInList = true
-                header.paraShapeId = 1
-                header.styleId = 1
-                header.charShapeCount = 1
-                header.rangeTagCount = 0
-                header.lineAlignCount = 1
-                header.instanceID = 0
-                header.isMergedByTrack = 0
-
-                // 텍스트 추가
-                currentParagraph.createText()
-                currentParagraph.text.addString(paragraph)
-
-                // 글꼴 참조 추가
-                currentParagraph.createCharShape()
-                for (charShape in charShapes) {
-                    currentParagraph.charShape.addParaCharShape(charShape[0], charShape[1])
-                }
-
-                currentParagraph.createLineSeg()
-                val lsi = currentParagraph.lineSeg.addNewLineSegItem()
-                lsi.textStartPosition = 0
-                lsi.lineVerticalPosition = 0
-                lsi.tag.firstSegmentAtLine = true
-                lsi.tag.lastSegmentAtLine = true
-
-                // 기존 paragraph 를 사용한 경우 트리거
-                if (defaultParagraph)
-                    defaultParagraph = false
-            }
-            // 기존 section 을 사용한 경우 트리거
-            if (defaultSection)
-                defaultSection = false
         }
 
     }

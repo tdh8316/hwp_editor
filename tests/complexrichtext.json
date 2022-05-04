@@ -22,7 +22,9 @@
                     0
                 ],
                 "baseSize":1000,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -35,7 +37,9 @@
                     0
                 ],
                 "baseSize":900,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -48,7 +52,9 @@
                     1
                 ],
                 "baseSize":900,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -61,7 +67,9 @@
                     0
                 ],
                 "baseSize":900,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -74,7 +82,9 @@
                     0
                 ],
                 "baseSize":1600,
-                "charColor":11891758
+                "charColor":11891758,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -87,7 +97,9 @@
                     0
                 ],
                 "baseSize":1100,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -100,7 +112,9 @@
                     1
                 ],
                 "baseSize":1000,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -113,7 +127,9 @@
                     1
                 ],
                 "baseSize":1000,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":true
             },
             {
                 "faceNameIds":[
@@ -126,7 +142,9 @@
                     1
                 ],
                 "baseSize":1900,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -139,7 +157,9 @@
                     1
                 ],
                 "baseSize":2000,
-                "charColor":0
+                "charColor":0,
+                "isItalic":false,
+                "isBold":false
             },
             {
                 "faceNameIds":[
@@ -152,69 +172,111 @@
                     1
                 ],
                 "baseSize":1000,
-                "charColor":0
+                "charColor":0,
+                "isItalic":true,
+                "isBold":false
             }
         ],
         "paraShapeList":[
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":0
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":0
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":150,
+                "tabDefId":0
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":130,
+                "tabDefId":0
             },
             {
-                "alignment":1
+                "alignment":1,
+                "lineSpace":130,
+                "tabDefId":0
             },
             {
-                "alignment":1
+                "alignment":1,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":1
+                "alignment":1,
+                "lineSpace":160,
+                "tabDefId":2
             },
             {
-                "alignment":1
+                "alignment":1,
+                "lineSpace":160,
+                "tabDefId":2
             },
             {
-                "alignment":1
+                "alignment":1,
+                "lineSpace":160,
+                "tabDefId":2
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":1
             },
             {
-                "alignment":0
+                "alignment":0,
+                "lineSpace":160,
+                "tabDefId":3
             }
         ]
     },
@@ -222,94 +284,105 @@
         "sections":[
             {
                 "paragraphs":[
-                    "자이루",
-                    "안녕하세요",
-                    "서식있는텍스트이건굵음이건큼이건원래대로이건기울임",
-                    "위에랑왜이리많이떨어짐",
-                    "여기는안그런데;;"
-                ],
-                "charShapes":[
-                    [
-                        [
-                            0,
-                            6
+                    {
+                        "text":"자이루",
+                        "charShapes":[
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                17,
+                                7
+                            ],
+                            [
+                                18,
+                                6
+                            ]
                         ],
-                        [
-                            1,
-                            7
+                        "paraShapeId":19,
+                        "styleId":0
+                    },
+                    {
+                        "text":"안녕하세요",
+                        "charShapes":[
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                1,
+                                7
+                            ],
+                            [
+                                2,
+                                6
+                            ],
+                            [
+                                3,
+                                7
+                            ],
+                            [
+                                4,
+                                6
+                            ]
                         ],
-                        [
-                            2,
-                            6
-                        ]
-                    ],
-                    [
-                        [
-                            0,
-                            6
+                        "paraShapeId":19,
+                        "styleId":0
+                    },
+                    {
+                        "text":"서식있는텍스트이건굵음이건큼이건원래대로이건기울임",
+                        "charShapes":[
+                            [
+                                0,
+                                6
+                            ],
+                            [
+                                7,
+                                7
+                            ],
+                            [
+                                11,
+                                9
+                            ],
+                            [
+                                13,
+                                8
+                            ],
+                            [
+                                14,
+                                6
+                            ],
+                            [
+                                20,
+                                10
+                            ]
                         ],
-                        [
-                            1,
-                            7
+                        "paraShapeId":19,
+                        "styleId":0
+                    },
+                    {
+                        "text":"위에랑왜이리많이떨어짐",
+                        "charShapes":[
+                            [
+                                0,
+                                6
+                            ]
                         ],
-                        [
-                            2,
-                            6
+                        "paraShapeId":19,
+                        "styleId":0
+                    },
+                    {
+                        "text":"여기는안그런데;;",
+                        "charShapes":[
+                            [
+                                0,
+                                6
+                            ]
                         ],
-                        [
-                            3,
-                            7
-                        ],
-                        [
-                            4,
-                            6
-                        ]
-                    ],
-                    [
-                        [
-                            0,
-                            6
-                        ],
-                        [
-                            7,
-                            7
-                        ],
-                        [
-                            11,
-                            9
-                        ],
-                        [
-                            13,
-                            8
-                        ],
-                        [
-                            14,
-                            6
-                        ],
-                        [
-                            20,
-                            10
-                        ]
-                    ],
-                    [
-                        [
-                            0,
-                            6
-                        ]
-                    ],
-                    [
-                        [
-                            0,
-                            6
-                        ]
-                    ]
-                ],
-                "paraShapeIds":[
-                    19,
-                    19,
-                    19,
-                    19,
-                    19
+                        "paraShapeId":19,
+                        "styleId":0
+                    }
                 ]
             }
         ]

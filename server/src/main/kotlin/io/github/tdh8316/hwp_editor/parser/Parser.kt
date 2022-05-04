@@ -2,6 +2,10 @@ package io.github.tdh8316.hwp_editor.parser
 
 import io.github.tdh8316.hwp_editor.parser.datamodel.*
 import kr.dogfoot.hwplib.`object`.HWPFile
+import kr.dogfoot.hwplib.`object`.bodytext.control.ControlTable
+import kr.dogfoot.hwplib.`object`.bodytext.control.ControlType
+import kr.dogfoot.hwplib.`object`.bodytext.control.table.Cell
+import kr.dogfoot.hwplib.`object`.bodytext.paragraph.Paragraph
 import kr.dogfoot.hwplib.reader.HWPReader
 import java.io.ByteArrayInputStream
 
@@ -44,6 +48,8 @@ class HWPParser {
                     ),
                     baseSize = charShape.baseSize,
                     charColor = charShape.charColor.value,
+                    isItalic = charShape.property.isItalic,
+                    isBold = charShape.property.isBold,
                 ),
             )
         }
@@ -53,6 +59,8 @@ class HWPParser {
             parsed.docInfo.paraShapeList.add(
                 ParaShape(
                     alignment = paraShape.property1.alignment.ordinal,
+                    lineSpace = paraShape.lineSpace2,
+                    tabDefId = paraShape.tabDefId,
                 )
             )
         }
@@ -61,30 +69,62 @@ class HWPParser {
     /// BodyText/Section%d 스트림을 파싱
     private fun parseBodyTextSections(hwpFile: HWPFile, parsed: HWPDataModel) {
         for (section in hwpFile.bodyText.sectionList) {
-            // Section 데이터 모델 생성
-            val currentSection = SectionDataModel()
-
-            for (paragraph in section.paragraphs) {
-                currentSection.paragraphs.add(paragraph.normalString)
-                val currentCharShapes = mutableListOf<ArrayList<Long>>()
-                for (shape in paragraph.charShape.positonShapeIdPairList) {
-                    currentCharShapes.add(
-                        arrayListOf(
-                            shape.position - (if (shape.position != 0L && currentSection.charShapes.isNotEmpty()) {
-                                16
-                            } else {
-                                0
-                            }),
-                            shape.shapeId,
-                        )
-                    )
-                }
-                currentSection.charShapes.add(currentCharShapes)
-                currentSection.paraShapeIds.add(paragraph.header.paraShapeId)
-            }
-
             // BodyText 에 Section 요소 추가
-            parsed.bodyText.sections.add(currentSection)
+            parsed.bodyText.sections.add(
+                SectionDataModel(
+                    paragraphs = section.paragraphs.map { buildParagraphDataModel(it) }
+                ),
+            )
         }
+    }
+
+    /// paragraph 데이터 모델 생성
+    private fun buildParagraphDataModel(paragraph: Paragraph): ParagraphDataModel {
+        return ParagraphDataModel(
+            text = paragraph.normalString,
+            charShapes = paragraph.charShape.positonShapeIdPairList.map { shape ->
+                arrayListOf(shape.position, shape.shapeId)
+            },
+            paraShapeId = paragraph.header.paraShapeId,
+            styleId = paragraph.header.styleId,
+            table = buildTableDataModel(paragraph),
+        )
+    }
+
+
+    private fun buildTableDataModel(paragraph: Paragraph): TableDataModel? {
+        return if (paragraph.controlList != null
+            && paragraph.controlList.size >= 3
+            && paragraph.controlList[2].type == ControlType.Table
+        ) {
+            TableDataModel(
+                rowList = (paragraph.controlList[2] as ControlTable).rowList.map { row ->
+                    RowDataModel(
+                        cellList = row.cellList.map { cell ->
+                            buildCellDataModel(cell)
+                        }
+                    )
+                },
+            )
+        } else {
+            null
+        }
+    }
+
+    /// cell 데이터 모델 생성
+    private fun buildCellDataModel(cell: Cell): CellDataModel {
+        return CellDataModel(
+            header = CellHeaderDataModel(
+                rowIndex = cell.listHeader.rowIndex,
+                columnIndex = cell.listHeader.colIndex,
+                rowSpan = cell.listHeader.rowSpan,
+                columnSpan = cell.listHeader.colSpan,
+                width = cell.listHeader.width,
+                height = cell.listHeader.height,
+                borderFillId = cell.listHeader.borderFillId,
+                // fieldName = cell.listHeader.fieldName,
+            ),
+            paragraphs = cell.paragraphList.paragraphs.map { buildParagraphDataModel(it) }
+        )
     }
 }
