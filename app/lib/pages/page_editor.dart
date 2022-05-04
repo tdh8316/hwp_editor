@@ -2,7 +2,10 @@ import 'package:fluent_ui/fluent_ui.dart';
 import 'package:hwp_editor_app/widgets/editor/widget_editor.dart';
 
 class EditorPage extends StatelessWidget {
-  const EditorPage({Key? key, required this.docData}) : super(key: key);
+  const EditorPage({
+    Key? key,
+    required this.docData,
+  }) : super(key: key);
 
   final Map<String, dynamic> docData;
 

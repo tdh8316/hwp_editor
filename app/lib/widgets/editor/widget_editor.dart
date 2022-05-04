@@ -13,15 +13,16 @@ class EditorWidget extends StatelessWidget {
     return ChangeNotifierProvider<EditorProvider>(
       create: (BuildContext context) => EditorProvider(hwpDocument: docData),
       builder: (BuildContext context, _) {
+        final EditorProvider watch = context.watch<EditorProvider>();
+        final EditorProvider read = context.read<EditorProvider>();
         return Padding(
           padding: const EdgeInsets.all(32),
           child: Container(
             child: MediaQuery(
               data: MediaQueryData(
-                textScaleFactor:
-                    context.watch<EditorProvider>().textScaleFactor,
+                textScaleFactor: watch.textScaleFactor,
               ),
-              child: _bodyTextBuilder(context),
+              child: _buildSections(context),
             ),
             color: Colors.white,
           ),
@@ -30,47 +31,34 @@ class EditorWidget extends StatelessWidget {
     );
   }
 
-  Widget _bodyTextBuilder(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      width: 720,
-      child: ListView.builder(
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-        itemCount: context
-            .watch<EditorProvider>()
-            .hwpDocument["bodyText"]["sections"]
-            .length,
-        itemBuilder: (BuildContext context, int sectionIndex) {
-          return _sectionBuilder(context, sectionIndex);
-        },
-      ),
-    );
-  }
-
-  Widget _sectionBuilder(BuildContext context, int sectionIndex) {
+  Widget _buildSections(BuildContext context) {
+    final EditorProvider watch = context.watch<EditorProvider>();
+    final EditorProvider read = context.read<EditorProvider>();
     return ListView.builder(
       shrinkWrap: true,
-      scrollDirection: Axis.vertical,
-      itemCount: context
-          .watch<EditorProvider>()
-          .hwpDocument["bodyText"]["sections"][sectionIndex]["paragraphs"]
-          .length,
-      itemBuilder: (BuildContext context, int paragraphIndex) {
-        return _paragraphBuilder(
-          context,
-          sectionIndex,
-          paragraphIndex,
-        );
+      itemCount: (watch.hwpDocument["bodyText"]["sections"] as List).length,
+      itemBuilder: (BuildContext context, int sectionIndex) {
+        return _buildParagraphs(context, sectionIndex);
       },
     );
   }
 
-  Widget _paragraphBuilder(
-      BuildContext context, int sectionIndex, int paragraphIndex) {
-    return ParagraphWidget(
-      sectionIndex: sectionIndex,
-      paragraphIndex: paragraphIndex,
+  Widget _buildParagraphs(BuildContext context, int sectionIndex) {
+    final EditorProvider watch = context.watch<EditorProvider>();
+    final EditorProvider read = context.read<EditorProvider>();
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: (watch.hwpDocument["bodyText"]["sections"][sectionIndex]
+              ["paragraphs"] as List)
+          .length,
+      itemBuilder: (BuildContext context, int paragraphIndex) {
+        return ParagraphWidget(
+          sectionIndex: sectionIndex,
+          paragraphIndex: paragraphIndex,
+          paragraph: watch.hwpDocument["bodyText"]["sections"][sectionIndex]
+              ["paragraphs"][paragraphIndex],
+        );
+      },
     );
   }
 }
