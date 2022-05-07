@@ -6,6 +6,7 @@ import 'package:flutter/material.dart'
     show TextField, Material, InputDecoration, InputBorder;
 import 'package:hwp_editor_app/models/model_hwp.dart';
 import 'package:hwp_editor_app/providers/provider_editor.dart';
+import 'package:hwp_editor_app/widgets/editor/widget_table.dart';
 import 'package:provider/provider.dart';
 
 class ParagraphWidget extends StatelessWidget {
@@ -35,6 +36,12 @@ class ParagraphWidget extends StatelessWidget {
           .toList(),
       paraShape: paraShape,
     );
+
+    if (paragraph.containsKey("table")) {
+      return TableWidget(
+        table: paragraph["table"],
+      );
+    }
 
     return Material(
       child: TextField(

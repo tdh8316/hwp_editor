@@ -17,11 +17,19 @@ class EditorWidget extends StatelessWidget {
         final EditorProvider read = context.read<EditorProvider>();
         return Padding(
           padding: const EdgeInsets.all(32),
-          child: MediaQuery(
-            data: MediaQueryData(
-              textScaleFactor: watch.textScaleFactor,
+          child: SingleChildScrollView(
+            child: Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(48),
+                child: MediaQuery(
+                  data: MediaQueryData(
+                    textScaleFactor: watch.textScaleFactor,
+                  ),
+                  child: _buildSections(context),
+                ),
+              ),
             ),
-            child: _buildSections(context),
           ),
         );
       },
@@ -31,12 +39,16 @@ class EditorWidget extends StatelessWidget {
   Widget _buildSections(BuildContext context) {
     final EditorProvider watch = context.watch<EditorProvider>();
     final EditorProvider read = context.read<EditorProvider>();
-    return ListView.builder(
-      shrinkWrap: true,
-      itemCount: (watch.hwpDocument["bodyText"]["sections"] as List).length,
-      itemBuilder: (BuildContext context, int sectionIndex) {
-        return _buildParagraphs(context, sectionIndex);
-      },
+    return ScrollConfiguration(
+      behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+      child: ListView.builder(
+        shrinkWrap: true,
+        primary: false,
+        itemCount: (watch.hwpDocument["bodyText"]["sections"] as List).length,
+        itemBuilder: (BuildContext context, int sectionIndex) {
+          return _buildParagraphs(context, sectionIndex);
+        },
+      ),
     );
   }
 
@@ -45,6 +57,7 @@ class EditorWidget extends StatelessWidget {
     final EditorProvider read = context.read<EditorProvider>();
     return ListView.builder(
       shrinkWrap: true,
+      primary: false,
       itemCount: (watch.hwpDocument["bodyText"]["sections"][sectionIndex]
               ["paragraphs"] as List)
           .length,

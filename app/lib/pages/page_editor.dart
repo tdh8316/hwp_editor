@@ -16,7 +16,10 @@ class EditorPage extends StatelessWidget {
         // color: const Color.fromRGBO(66, 137, 201, 1),
         child: Column(
           children: [
-            EditorWidget(docData: docData),
+            SizedBox(
+              child: EditorWidget(docData: docData),
+              height: MediaQuery.of(context).size.height,
+            ),
           ],
         ),
       ),
