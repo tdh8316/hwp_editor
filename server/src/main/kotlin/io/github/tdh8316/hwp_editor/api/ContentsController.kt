@@ -3,7 +3,6 @@ package io.github.tdh8316.hwp_editor.api
 import com.google.gson.Gson
 import io.github.tdh8316.hwp_editor.parser.HWPParser
 import io.github.tdh8316.hwp_editor.parser.datamodel.HWPDataModel
-import io.github.tdh8316.hwp_editor.prettier
 import io.github.tdh8316.hwp_editor.writer.Writer
 import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.http.ResponseEntity
@@ -26,7 +25,7 @@ class ContentsController {
         val parsed = HWPParser().parseDocument(
             stream = ByteArrayInputStream(file.readBytes())
         )
-        val jsonString = Gson().toJson(parsed).prettier()
+        val jsonString = Gson().toJson(parsed)
 
         return ResponseEntity.ok(jsonString)
     }
@@ -47,7 +46,7 @@ class ContentsController {
         val parsedDocument = HWPParser().parseDocument(stream)
 
         // 파싱된 문서를 json 문자열로 변환
-        val jsonString = Gson().toJson(parsedDocument).prettier()
+        val jsonString = Gson().toJson(parsedDocument)
 
         // json 문자열 전달
         return ResponseEntity.ok(jsonString)

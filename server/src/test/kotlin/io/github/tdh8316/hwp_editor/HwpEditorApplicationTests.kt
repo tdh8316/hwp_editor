@@ -1,6 +1,6 @@
 package io.github.tdh8316.hwp_editor
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import io.github.tdh8316.hwp_editor.parser.HWPParser
 import org.junit.jupiter.api.Test
 import java.io.ByteArrayInputStream
@@ -17,8 +17,8 @@ class HwpEditorApplicationTests {
         val parsed = HWPParser().parseDocument(
             stream = ByteArrayInputStream(bytearray)
         )
-        val gson = Gson()
-        val res = (gson.toJson(parsed).prettyPrint())
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        val res = (gson.toJson(parsed))
 
         val f = File("../tests/report.json")
         f.createNewFile()
@@ -26,42 +26,4 @@ class HwpEditorApplicationTests {
 
     }
 
-}
-
-fun Any.prettyPrint(): String {
-
-    var indentLevel = 0
-    val indentWidth = 4
-
-    fun padding() = "".padStart(indentLevel * indentWidth)
-
-    val toString = toString()
-
-    val stringBuilder = StringBuilder(toString.length)
-
-    var i = 0
-    while (i < toString.length) {
-        when (val char = toString[i]) {
-            '(', '[', '{' -> {
-                indentLevel++
-                stringBuilder.appendLine(char).append(padding())
-            }
-            ')', ']', '}' -> {
-                indentLevel--
-                stringBuilder.appendLine().append(padding()).append(char)
-            }
-            ',' -> {
-                stringBuilder.appendLine(char).append(padding())
-                // ignore space after comma as we have added a newline
-                val nextChar = toString.getOrElse(i + 1) { char }
-                if (nextChar == ' ') i++
-            }
-            else -> {
-                stringBuilder.append(char)
-            }
-        }
-        i++
-    }
-
-    return stringBuilder.toString()
 }

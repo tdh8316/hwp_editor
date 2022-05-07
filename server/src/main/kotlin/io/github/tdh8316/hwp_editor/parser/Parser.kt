@@ -72,7 +72,10 @@ class HWPParser {
             // BodyText 에 Section 요소 추가
             parsed.bodyText.sections.add(
                 SectionDataModel(
-                    paragraphs = section.paragraphs.map { buildParagraphDataModel(it) }
+                    paragraphs = section.paragraphs.map { para ->
+                        // 현재 section 에 paragraph 데이터 모델 추가
+                        buildParagraphDataModel(para)
+                    }
                 ),
             )
         }
@@ -81,7 +84,7 @@ class HWPParser {
     /// paragraph 데이터 모델 생성
     private fun buildParagraphDataModel(paragraph: Paragraph): ParagraphDataModel {
         return ParagraphDataModel(
-            text = paragraph.normalString,
+            text = paragraph.normalString.replace("\n", " "),
             charShapes = paragraph.charShape.positonShapeIdPairList.map { shape ->
                 arrayListOf(shape.position, shape.shapeId)
             },
@@ -92,14 +95,17 @@ class HWPParser {
     }
 
 
+    /// Table 데이터 모델 생성
     private fun buildTableDataModel(paragraph: Paragraph): TableDataModel? {
         return if (paragraph.controlList != null
             && paragraph.controlList.size >= 3
             && paragraph.controlList[2].type == ControlType.Table
         ) {
             TableDataModel(
+                // Table Rows 생성
                 rowList = (paragraph.controlList[2] as ControlTable).rowList.map { row ->
                     RowDataModel(
+                        // Table Rows 의 Cell 데이터 모델 생성
                         cellList = row.cellList.map { cell ->
                             buildCellDataModel(cell)
                         }
@@ -124,7 +130,10 @@ class HWPParser {
                 borderFillId = cell.listHeader.borderFillId,
                 // fieldName = cell.listHeader.fieldName,
             ),
-            paragraphs = cell.paragraphList.paragraphs.map { buildParagraphDataModel(it) }
+            paragraphs = cell.paragraphList.paragraphs.map { para ->
+                // 현재 cell 에 paragraph 데이터 모델 추가
+                buildParagraphDataModel(para)
+            }
         )
     }
 }
