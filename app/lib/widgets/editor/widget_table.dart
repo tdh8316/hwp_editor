@@ -18,7 +18,9 @@ class TableWidget extends StatelessWidget {
       itemCount: (table["rowList"] as List).length,
       itemBuilder: (BuildContext context, int index) {
         return Container(
-          child: IntrinsicHeight(child: _buildRow(context, table["rowList"][index])),
+          child: IntrinsicHeight(
+            child: _buildRow(context, table["rowList"][index]),
+          ),
           decoration: BoxDecoration(
             border: Border(
               top: index == 0

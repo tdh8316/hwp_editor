@@ -19,6 +19,7 @@ class EditorPage extends StatelessWidget {
             SizedBox(
               child: EditorWidget(docData: docData),
               height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
             ),
           ],
         ),

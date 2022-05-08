@@ -37,13 +37,7 @@ class ParagraphWidget extends StatelessWidget {
       paraShape: paraShape,
     );
 
-    if (paragraph.containsKey("table")) {
-      return TableWidget(
-        table: paragraph["table"],
-      );
-    }
-
-    return Material(
+    final Widget textWidget = Material(
       child: TextField(
         controller: paragraphController,
         focusNode: focusNode,
@@ -65,6 +59,18 @@ class ParagraphWidget extends StatelessWidget {
         maxLines: null,
         cursorColor: Colors.black,
       ),
+    );
+
+    return Column(
+      children: [
+        if (paragraph.containsKey("table"))
+          TableWidget(
+            table: paragraph["table"],
+          )
+        else
+          Container(),
+        textWidget,
+      ],
     );
   }
 }
