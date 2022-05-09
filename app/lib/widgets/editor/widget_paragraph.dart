@@ -23,8 +23,8 @@ class ParagraphWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final EditorProvider watch = context.watch<EditorProvider>();
-    final EditorProvider read = context.read<EditorProvider>();
+    final EditorWidgetProvider watch = context.watch<EditorWidgetProvider>();
+    final EditorWidgetProvider read = context.read<EditorWidgetProvider>();
 
     final FocusNode focusNode = FocusNode();
     final Map paraShape =
@@ -108,7 +108,7 @@ class ParagraphController extends TextEditingController {
         TextSpan(
           text: pair[0] as String,
           style: context
-              .read<EditorProvider>()
+              .read<EditorWidgetProvider>()
               .getTextStyleFromCharShape(
                 pair[1][1] as int,
               )

@@ -10,11 +10,13 @@ class EditorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<EditorProvider>(
-      create: (BuildContext context) => EditorProvider(hwpDocument: docData),
+    return ChangeNotifierProvider<EditorWidgetProvider>(
+      create: (BuildContext context) =>
+          EditorWidgetProvider(hwpDocument: docData),
       builder: (BuildContext context, _) {
-        final EditorProvider watch = context.watch<EditorProvider>();
-        final EditorProvider read = context.read<EditorProvider>();
+        final EditorWidgetProvider watch =
+            context.watch<EditorWidgetProvider>();
+        final EditorWidgetProvider read = context.read<EditorWidgetProvider>();
         return Padding(
           padding: const EdgeInsets.all(32),
           child: SingleChildScrollView(
@@ -37,8 +39,8 @@ class EditorWidget extends StatelessWidget {
   }
 
   Widget _buildSections(BuildContext context) {
-    final EditorProvider watch = context.watch<EditorProvider>();
-    final EditorProvider read = context.read<EditorProvider>();
+    final EditorWidgetProvider watch = context.watch<EditorWidgetProvider>();
+    final EditorWidgetProvider read = context.read<EditorWidgetProvider>();
     return ScrollConfiguration(
       behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
       child: ListView.builder(
@@ -53,8 +55,8 @@ class EditorWidget extends StatelessWidget {
   }
 
   Widget _buildParagraphs(BuildContext context, int sectionIndex) {
-    final EditorProvider watch = context.watch<EditorProvider>();
-    final EditorProvider read = context.read<EditorProvider>();
+    final EditorWidgetProvider watch = context.watch<EditorWidgetProvider>();
+    final EditorWidgetProvider read = context.read<EditorWidgetProvider>();
     return ListView.builder(
       shrinkWrap: true,
       primary: false,

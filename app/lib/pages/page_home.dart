@@ -9,16 +9,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (BuildContext context) => HomeProvider(),
+      create: (BuildContext context) => HomePageProvider(),
       builder: (BuildContext context, _) {
         return Scaffold(
           backgroundColor: Colors.white,
           body: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-
-            ],
+            children: [],
           ),
         );
       },

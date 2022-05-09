@@ -5,7 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class HomeProvider extends ChangeNotifier {
+class HomePageProvider extends ChangeNotifier {
   Future<Map<String, dynamic>?> openDocument(BuildContext context) async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowedExtensions: ["hwp"],

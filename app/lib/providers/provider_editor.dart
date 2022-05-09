@@ -1,7 +1,7 @@
 import 'package:fluent_ui/fluent_ui.dart';
 
-class EditorProvider extends ChangeNotifier {
-  EditorProvider({required this.hwpDocument});
+class EditorWidgetProvider extends ChangeNotifier {
+  EditorWidgetProvider({required this.hwpDocument});
 
   final Map<String, dynamic> hwpDocument;
 
