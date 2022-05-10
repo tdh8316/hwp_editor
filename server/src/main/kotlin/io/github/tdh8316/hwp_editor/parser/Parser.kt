@@ -34,7 +34,7 @@ class HWPParser {
             parsed.docInfo.hangulFaceNameList.add(
                 FaceName(
                     name = hangulFaceName.name,
-                    baseFontName = hangulFaceName.baseFontName,
+                    baseFontName = hangulFaceName.baseFontName ?: "",
                 ),
             )
         }

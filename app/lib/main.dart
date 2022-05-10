@@ -22,5 +22,5 @@ class HWPEditorApplication extends StatelessWidget {
 }
 
 Map<String, dynamic> testData() => jsonDecode(
-      File("../tests/report.json").readAsStringSync(),
+      File("../tests/complexrichtext.json").readAsStringSync(),
     );
