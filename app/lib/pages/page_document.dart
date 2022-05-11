@@ -19,54 +19,10 @@ class DocumentPage extends StatelessWidget {
           hwpDocument: docData,
         ),
         builder: (BuildContext context, _) {
-          final DocumentPageProvider watch =
-              context.watch<DocumentPageProvider>();
-          // final DocumentPageProvider read = context.read<DocumentPageProvider>();
-
           return Column(
             children: [
               _buildCommandBar(context),
-              CommandBarCard(
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: 60,
-                      child: Row(),
-                    ),
-                    Container(
-                      constraints: const BoxConstraints(
-                        minHeight: 20,
-                      ),
-                      child: Row(
-                        children: [
-                          Selector<DocumentPageProvider, TextStyle>(
-                            selector: (_, provider) =>
-                                provider.editorState.currentTextStyle,
-                            builder: (_, TextStyle style, __) => Row(
-                              children: [
-                                DropDownButton(
-                                  title: Text(style.fontFamily.toString()),
-                                  items: [
-                                    MenuFlyoutItem(
-                                      text: Text("함초롬바탕"),
-                                      onPressed: () {},
-                                    ),MenuFlyoutItem(
-                                      text: Text("맑은 고딕"),
-                                      onPressed: () {},
-                                    ),
-                                  ],
-                                ),
-                                Text("bold:${style.fontWeight == FontWeight.bold}/"),
-                                Text("italic:${style.fontStyle?.index == 1}"),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              _buildCommandPanel(context),
               SizedBox(
                 child: _buildEditor(context),
                 height: MediaQuery.of(context).size.height - 144,
@@ -92,7 +48,7 @@ class DocumentPage extends StatelessWidget {
             padding: const EdgeInsets.all(48),
             child: MediaQuery(
               data: MediaQueryData(
-                textScaleFactor: watch.editorState.scaleFactor,
+                textScaleFactor: watch.scaleFactor,
               ),
               child: _buildSections(context),
             ),
@@ -129,8 +85,6 @@ class DocumentPage extends StatelessWidget {
           .length,
       itemBuilder: (BuildContext context, int paragraphIndex) {
         return _buildParagraph(
-          // sectionIndex: sectionIndex,
-          // paragraphIndex: paragraphIndex,
           context,
           sectionIndex,
           paragraphIndex,
@@ -139,40 +93,44 @@ class DocumentPage extends StatelessWidget {
     );
   }
 
-  static Widget _buildParagraph(
+  Widget _buildParagraph(
     BuildContext context,
     int sectionIndex,
     int paragraphIndex,
   ) {
     final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
     // final DocumentPageProvider read = context.read<DocumentPageProvider>();
+
+    // build 할 paragraph 참조
     final List _paragraphs =
         watch.hwpDocument["bodyText"]["sections"][sectionIndex]["paragraphs"];
     final Map _paragraph = _paragraphs[paragraphIndex];
 
+    // ParagraphController 생성
     late final ParagraphController _paragraphController;
+    // 기존의 controller 가 있다면 그것으로 사용
     if (DocumentPageProvider.paragraphControllers.length >=
         _paragraphs.length) {
       _paragraphController =
           DocumentPageProvider.paragraphControllers[paragraphIndex];
     } else {
+      // 없다면 새로 생성
       _paragraphController = ParagraphController();
-      final Map paraShape = watch.hwpDocument["docInfo"]["paraShapeList"]
-          [_paragraph["paraShapeId"]];
-
-      _paragraphController.paraShape = paraShape;
+      // 값 초기화
+      _paragraphController.paraShape = watch.hwpDocument["docInfo"]
+          ["paraShapeList"][_paragraph["paraShapeId"]];
       _paragraphController.text = _paragraph["text"];
       _paragraphController.charShapes = (_paragraph["charShapes"]
               as List<dynamic>)
           .map((list) => (list as List).map((value) => value as int).toList())
           .toList();
+      // 생성한 controller 추가
       DocumentPageProvider.paragraphControllers.add(_paragraphController);
     }
 
     return ParagraphWidget(
       paragraph: _paragraphs[paragraphIndex],
       paragraphController: _paragraphController,
-      currentStyle: watch.editorState.currentTextStyle,
     );
   }
 
@@ -200,6 +158,46 @@ class DocumentPage extends StatelessWidget {
           onPressed: () {},
         ),
       ],
+    );
+  }
+
+  Widget _buildCommandPanel(BuildContext context) {
+    final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
+    // final DocumentPageProvider read = context.read<DocumentPageProvider>();
+    return CommandBarCard(
+      child: Column(
+        children: [
+          SizedBox(
+            height: 60,
+            child: Row(),
+          ),
+          Container(
+            constraints: const BoxConstraints(
+              minHeight: 20,
+            ),
+            child: Row(
+              children: [
+                DropDownButton(
+                  title: Text(watch.currentTextStyle.fontFamily.toString()),
+                  items: [
+                    MenuFlyoutItem(
+                      text: Text("함초롬바탕"),
+                      onPressed: () {},
+                    ),
+                    MenuFlyoutItem(
+                      text: Text("맑은 고딕"),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+                Text(
+                    "bold:${watch.currentTextStyle.fontWeight == FontWeight.bold}/"),
+                Text("italic:${watch.currentTextStyle.fontStyle?.index == 1}"),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 }
