@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:hwp_editor_app/models/model_fonts.dart';
 import 'package:hwp_editor_app/providers/provider_document.dart';
 import 'package:hwp_editor_app/widgets/editor/widget_paragraph.dart';
 import 'package:provider/provider.dart';
@@ -128,9 +129,19 @@ class DocumentPage extends StatelessWidget {
       DocumentPageProvider.paragraphControllers.add(_paragraphController);
     }
 
+    // FocusNode 생성
+    late final FocusNode _focusNode;
+    if (DocumentPageProvider.focusNodes.length >= _paragraphs.length) {
+      _focusNode = DocumentPageProvider.focusNodes[paragraphIndex];
+    } else {
+      _focusNode = FocusNode();
+      DocumentPageProvider.focusNodes.add(_focusNode);
+    }
+
     return ParagraphWidget(
       paragraph: _paragraphs[paragraphIndex],
       paragraphController: _paragraphController,
+      focusNode: _focusNode,
     );
   }
 
@@ -163,7 +174,7 @@ class DocumentPage extends StatelessWidget {
 
   Widget _buildCommandPanel(BuildContext context) {
     final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
-    // final DocumentPageProvider read = context.read<DocumentPageProvider>();
+    final DocumentPageProvider read = context.read<DocumentPageProvider>();
     return CommandBarCard(
       child: Column(
         children: [
@@ -180,19 +191,39 @@ class DocumentPage extends StatelessWidget {
                 DropDownButton(
                   title: Text(watch.currentTextStyle.fontFamily.toString()),
                   items: [
-                    MenuFlyoutItem(
-                      text: Text("함초롬바탕"),
-                      onPressed: () {},
-                    ),
-                    MenuFlyoutItem(
-                      text: Text("맑은 고딕"),
-                      onPressed: () {},
-                    ),
+                    for (String fontName in getFontNames())
+                      MenuFlyoutItem(
+                        text: Text(fontName),
+                        onPressed: () {
+                          read.currentTextStyle = read.currentTextStyle
+                              .copyWith(fontFamily: fontName);
+                        },
+                      ),
                   ],
                 ),
-                Text(
-                    "bold:${watch.currentTextStyle.fontWeight == FontWeight.bold}/"),
-                Text("italic:${watch.currentTextStyle.fontStyle?.index == 1}"),
+                ToggleButton(
+                  checked: watch.currentTextStyle.fontWeight == FontWeight.bold,
+                  onChanged: (bool checked) {
+                    if (checked) {
+                      read.currentTextStyle = read.currentTextStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                      );
+                    } else {
+                      read.currentTextStyle = read.currentTextStyle.copyWith(
+                        fontWeight: FontWeight.normal,
+                      );
+                    }
+                    DocumentPageProvider.focusNodes[read.lastFocusedNodeIndex]
+                        .requestFocus();
+                  },
+                  child: Text("Bold"),
+                ),
+                SizedBox(
+                  width: 64,
+                  child: TextBox(
+                    controller: read.fontSizeController..text=watch.currentTextStyle.fontSize.toString(),
+                  ),
+                )
               ],
             ),
           )

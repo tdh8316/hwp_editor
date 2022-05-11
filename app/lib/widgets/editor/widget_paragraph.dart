@@ -13,10 +13,12 @@ class ParagraphWidget extends StatefulWidget {
     Key? key,
     required this.paragraph,
     required this.paragraphController,
+    required this.focusNode,
   }) : super(key: key);
 
   final Map paragraph;
   final ParagraphController paragraphController;
+  final FocusNode focusNode;
 
   @override
   State<ParagraphWidget> createState() => _ParagraphWidgetState();
@@ -25,7 +27,7 @@ class ParagraphWidget extends StatefulWidget {
 class _ParagraphWidgetState extends State<ParagraphWidget> {
   late final Map paragraph;
   late final ParagraphController paragraphController;
-  late final TextStyle? currentStyle;
+  late final FocusNode focusNode;
 
   late String _prevText;
 
@@ -33,6 +35,7 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
   void initState() {
     paragraph = widget.paragraph;
     paragraphController = widget.paragraphController;
+    focusNode=widget.focusNode;
 
     _prevText = paragraphController.text;
 
@@ -45,6 +48,7 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
     final DocumentPageProvider read = context.read<DocumentPageProvider>();
 
     final TextField textField = TextField(
+      focusNode: focusNode,
       controller: paragraphController,
       decoration: const InputDecoration(
         hintText: null,
@@ -129,8 +133,10 @@ class ParagraphController extends TextEditingController {
     );
   }
 
+  int getCursor({int adjust = 0}) => selection.baseOffset - adjust;
+
   int getCurrentCharShapeIndex({int adjust = 0}) {
-    final int cursorPosition = selection.baseOffset - adjust;
+    final int cursorPosition = getCursor(adjust: adjust);
     int idx = 0;
     for (int i = 0; i <= charShapes!.length - 1; i++) {
       if (charShapes![i][0] < cursorPosition) {
