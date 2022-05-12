@@ -60,11 +60,11 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
       ),
       style: watch.currentTextStyle,
       strutStyle: StrutStyle(
-        height: paragraphController.paraShape!["lineSpace"] / 100.0,
+        height: paragraphController.paraShape["lineSpace"] / 100.0,
       ),
       smartQuotesType: SmartQuotesType.enabled,
       selectionHeightStyle: BoxHeightStyle.max,
-      textAlign: getTextAlign(paragraphController.paraShape!["alignment"]),
+      textAlign: getTextAlign(paragraphController.paraShape["alignment"]),
       maxLines: null,
       cursorColor: Colors.black,
       onTap: () => read.onParagraphCursorChanged(paragraphController),
@@ -86,12 +86,12 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
 class ParagraphController extends TextEditingController {
   ParagraphController({
     String? text,
-    this.charShapes,
-    this.paraShape,
+    required this.charShapes,
+    required this.paraShape,
   }) : super(text: text);
 
-  List<List<int>>? charShapes;
-  Map? paraShape;
+  List<List<int>> charShapes;
+  Map paraShape;
 
   @override
   TextSpan buildTextSpan({
@@ -99,12 +99,11 @@ class ParagraphController extends TextEditingController {
     TextStyle? style,
     required bool withComposing,
   }) {
-    if (charShapes == null || paraShape == null) throw NullThrownError();
     List<TextSpan> children = [];
     List<String> matches = [];
     String _tmpMatch = "";
     for (int i = 0; i < text.length; i++) {
-      if (charShapes!.map((charShape) => charShape[0]).contains(i)) {
+      if (charShapes.map((charShape) => charShape[0]).contains(i)) {
         if (_tmpMatch.isNotEmpty) matches.add(_tmpMatch);
         _tmpMatch = "";
       }
@@ -112,7 +111,7 @@ class ParagraphController extends TextEditingController {
     }
     matches.add(_tmpMatch);
 
-    for (List pair in IterableZip([matches, charShapes!])) {
+    for (List pair in IterableZip([matches, charShapes])) {
       children.add(
         TextSpan(
           text: pair[0] as String,
@@ -122,7 +121,7 @@ class ParagraphController extends TextEditingController {
                 pair[1][1] as int,
               )
               .copyWith(
-                height: paraShape!["lineSpace"] / 100.0,
+                height: paraShape["lineSpace"] / 100.0,
               ),
         ),
       );
@@ -133,13 +132,14 @@ class ParagraphController extends TextEditingController {
     );
   }
 
+  /// 한국어가 입력 중일 때는 커서가 문자열 길이보다 한 칸 뒤임
   int getCursor({int adjust = 0}) => selection.baseOffset - adjust;
 
   int getCurrentCharShapeIndex({int adjust = 0}) {
     final int cursorPosition = getCursor(adjust: adjust);
     int idx = 0;
-    for (int i = 0; i <= charShapes!.length - 1; i++) {
-      if (charShapes![i][0] < cursorPosition) {
+    for (int i = 0; i <= charShapes.length - 1; i++) {
+      if (charShapes[i][0] < cursorPosition) {
         idx = i;
       } else {
         break;

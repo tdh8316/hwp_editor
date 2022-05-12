@@ -20,7 +20,7 @@ class DocumentPageProvider extends ChangeNotifier {
   set currentTextStyle(TextStyle _new) {
     _currentTextStyle = _new;
     notifyListeners();
-    print(_currentTextStyle);
+    // print(_currentTextStyle);
   }
 
   TextStyle get currentTextStyle => _currentTextStyle;
@@ -62,7 +62,7 @@ class DocumentPageProvider extends ChangeNotifier {
 
   void onParagraphCursorChanged(ParagraphController controller) {
     currentTextStyle = getTextStyleFromCharShape(
-      controller.charShapes![controller.getCurrentCharShapeIndex()][1],
+      controller.charShapes[controller.getCurrentCharShapeIndex()][1],
     );
 
     lastFocusedNodeIndex = paragraphControllers.indexOf(controller);
@@ -84,93 +84,6 @@ class DocumentPageProvider extends ChangeNotifier {
         .map((_tuple) => (_tuple as List).map((e) => e as int).toList())
         .toList();
     print("origin:$_charShapes");
-
-    // 텍스트가 추가된 것이라면
-    if (text.length > prevText.length) {
-      // 추가된 문자열?
-      String _diff = text.replaceAll(prevText, "");
-      for (List _pair in IterableZip([text.characters, prevText.characters])) {
-        if (_pair[0] != _pair[1]) _diff = _pair[0];
-      }
-      final bool _isKor = RegExp(r"^[ㄱ-ㅎㅏ-ㅣ가-힣]+$").hasMatch(_diff);
-      final int _adjust = _isKor ? 0 : 1;
-      final int _charShapesIndex = controller.getCurrentCharShapeIndex(
-        adjust: _adjust,
-      );
-      // 현재 textStyle 과 커서의 charShape 가 다르다면
-      if (getTextStyleFromCharShape(_charShapes[_charShapesIndex][1]) !=
-          currentTextStyle) {
-        final int _shapeIndex = getCharShapeIndexFromTextStyle(
-          currentTextStyle,
-        );
-        if (_isKor) {
-          if (_charShapes.length <= _charShapesIndex + 1) {
-            _charShapes.add(
-              [
-                controller.getCursor(adjust: _adjust) - (_isKor ? 1 : 2),
-                _shapeIndex,
-              ],
-            );
-          } else {
-            final List<int> _cursorPrevCharShape =
-                _charShapes[_charShapesIndex];
-            final List<int> _cursorNextCharShape =
-                _charShapes[_charShapesIndex + 1];
-            _charShapes.insert(
-              _charShapesIndex + 1,
-              [
-                controller.getCursor(adjust: _adjust) - (_isKor ? 1 : 2),
-                _shapeIndex,
-              ],
-            );
-            // charShape 가 한 글자 간격으로 설정된게 아니라면 쪼개기
-            if (_cursorPrevCharShape[0] + 1 != _cursorNextCharShape[0]) {
-              List<int> _clonedPrev = _cursorPrevCharShape.toList();
-              _charShapes.insert(_charShapesIndex + 2, [
-                controller.getCursor(adjust: _adjust) - (_isKor ? 0 : 1),
-                _clonedPrev[1],
-              ]);
-            }
-          }
-        } else {
-          // TODO: non-Korean
-        }
-      }
-      // 현재 charShape 인덱스 뒤로 계속 charShapes 가 있으면
-      if (_charShapes.length >= _charShapesIndex + 1) {
-        // 현재 charShape 뒤의 charShapes position += _diff.length
-        for (List charShape in _charShapes.slice(_charShapesIndex + 1)) {
-          charShape[0] += _diff.length;
-        }
-      }
-    } else if (text.length < prevText.length) {
-      // 제거된 문자열?
-      String _diff = "";
-      for (List _pair in IterableZip([text.characters, prevText.characters])) {
-        if (_pair[0] != _pair[1]) _diff = _pair[1];
-      }
-
-      final int _currentCharShapeIndex = controller.getCurrentCharShapeIndex();
-
-      if (text.length <= _charShapes.last.first && _charShapes.length > 1) {
-        _charShapes.removeLast();
-      }
-
-      // 앞의 두 charShapes 의 지워진 후 position 이 동일하다면
-      if (_charShapes.length > _currentCharShapeIndex + 2 &&
-          _charShapes[_currentCharShapeIndex + 1][0] ==
-              _charShapes[_currentCharShapeIndex + 2][0] - 1) {
-        // 앞의 charShape 제거
-        _charShapes.removeAt(_currentCharShapeIndex + 1);
-      }
-      // 현재 charShape 인덱스 뒤로 계속 charShapes 가 있으면
-      if (_charShapes.length > _currentCharShapeIndex + 1) {
-        // 현재 charShape 뒤의 charShapes position -= _diff.length
-        for (int i = 1; _charShapes.length > i + _currentCharShapeIndex; i++) {
-          _charShapes[i + _currentCharShapeIndex][0] -= _diff.length;
-        }
-      }
-    }
 
     _paragraph["text"] = text;
     // charShape 에 다시 할당 (deep copy 로 옮겨졌기 때문)

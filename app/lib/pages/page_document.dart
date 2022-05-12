@@ -116,15 +116,14 @@ class DocumentPage extends StatelessWidget {
           DocumentPageProvider.paragraphControllers[paragraphIndex];
     } else {
       // 없다면 새로 생성
-      _paragraphController = ParagraphController();
-      // 값 초기화
-      _paragraphController.paraShape = watch.hwpDocument["docInfo"]
-          ["paraShapeList"][_paragraph["paraShapeId"]];
-      _paragraphController.text = _paragraph["text"];
-      _paragraphController.charShapes = (_paragraph["charShapes"]
-              as List<dynamic>)
-          .map((list) => (list as List).map((value) => value as int).toList())
-          .toList();
+      _paragraphController = ParagraphController(
+        text: _paragraph["text"],
+        charShapes: (_paragraph["charShapes"] as List<dynamic>)
+            .map((list) => (list as List).map((value) => value as int).toList())
+            .toList(),
+        paraShape: watch.hwpDocument["docInfo"]["paraShapeList"]
+            [_paragraph["paraShapeId"]],
+      );
       // 생성한 controller 추가
       DocumentPageProvider.paragraphControllers.add(_paragraphController);
     }
@@ -221,7 +220,8 @@ class DocumentPage extends StatelessWidget {
                 SizedBox(
                   width: 64,
                   child: TextBox(
-                    controller: read.fontSizeController..text=watch.currentTextStyle.fontSize.toString(),
+                    controller: read.fontSizeController
+                      ..text = watch.currentTextStyle.fontSize.toString(),
                   ),
                 )
               ],
