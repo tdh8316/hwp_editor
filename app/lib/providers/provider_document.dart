@@ -56,8 +56,15 @@ class DocumentPageProvider extends ChangeNotifier {
     return _list;
   }
 
-  int getCharShapeIndexFromTextStyle(TextStyle textStyle) {
-    return getAllCharShapes().indexOf(textStyle);
+  int getCharShapeReferenceValueFromTextStyle(TextStyle textStyle) {
+    final List<TextStyle> _allCharShapes = getAllCharShapes();
+    if (_allCharShapes.contains(textStyle)) {
+      return _allCharShapes.indexOf(textStyle);
+    } else {
+      // final int _index = (hwpDocument["docInfo"]["charShapeList"] as List).length + 1;
+      // TODO: Add charShape
+      return 0;
+    }
   }
 
   void onParagraphCursorChanged(ParagraphController controller) {
@@ -83,7 +90,144 @@ class DocumentPageProvider extends ChangeNotifier {
     final List<List<int>> _charShapes = (_paragraph["charShapes"] as List)
         .map((_tuple) => (_tuple as List).map((e) => e as int).toList())
         .toList();
-    print("origin:$_charShapes");
+    // print("origin:$_charShapes");
+
+    // 문자열 길이에 영향을 주는 변경된 문자
+    String _diffChar = "";
+    if (text.length > prevText.length) {
+      // 텍스트가 추가됨
+      for (List _pair in IterableZip([text.characters, prevText.characters])) {
+        if (_pair[0] != _pair[1]) {
+          _diffChar = _pair[0];
+          break;
+        }
+      }
+      if (_diffChar.isEmpty) {
+        _diffChar = text.characters.last;
+      }
+    } else if (text.length < prevText.length) {
+      // 텍스트가 지워짐
+      for (List _pair in IterableZip([text.characters, prevText.characters])) {
+        if (_pair[0] != _pair[1]) {
+          _diffChar = _pair[1];
+          break;
+        }
+      }
+      if (_diffChar.isEmpty) {
+        _diffChar = prevText.characters.last;
+      }
+    } else {
+      // 한국어 입력중...
+    }
+
+    // 문자가 지워지거나 추가됐을 때만
+    if (_diffChar.isNotEmpty) {
+      final bool _isKor = RegExp(r"^[ㄱ-ㅎㅏ-ㅣ가-힣]+$").hasMatch(_diffChar);
+
+      // 텍스트가 추가됐을 때
+      if (text.length > prevText.length) {
+        // 한국어 입력중일 때(커서가 한 칸 뒤에 있음)는 그대로, 아닐땐 - 1
+        final int _lastCursorIndex = controller.getCursor(
+          adjust: _isKor ? 0 : 1,
+        );
+        final int _lastCharShapeIndex = controller.getCurrentCharShapeIndex(
+          adjust: _isKor ? 0 : 1,
+        );
+
+        final TextStyle _lastTextStyle = getTextStyleFromCharShape(
+          _charShapes[_lastCharShapeIndex][1],
+        );
+        TextStyle? _nextTextStyle;
+        if (_charShapes.length > _lastCharShapeIndex + 1) {
+          _nextTextStyle = getTextStyleFromCharShape(
+            _charShapes[_lastCharShapeIndex + 1][1],
+          );
+        }
+
+        // 현재 입력중인 textStyle 에 해당하는 charShape 참조
+        final int _currentCharShapeReferenceValue =
+            getCharShapeReferenceValueFromTextStyle(_currentTextStyle);
+
+        // 현재 텍스트 스타일이 이 다음 것과 같을 때
+        if (_nextTextStyle != null && currentTextStyle == _nextTextStyle) {
+          // 다음 charShape 뒤로 계속 charShape 가 있으면
+          if (_charShapes.length >= _lastCharShapeIndex + 2) {
+            // 그 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
+            for (List _next in _charShapes.slice(_lastCharShapeIndex + 2)) {
+              _next[0] += _diffChar.length;
+            }
+          }
+        }
+        // 마지막 커서의 텍스트 스타일과 현재의 텍스트 스타일이 다를 때
+        else if (_lastTextStyle != currentTextStyle) {
+          // 커서가 맨 앞에 있을 때
+          if (_lastCursorIndex == 0) {
+            _charShapes.insert(
+              0,
+              [
+                _lastCursorIndex,
+                _currentCharShapeReferenceValue,
+              ],
+            );
+            // 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
+            for (List _next in _charShapes.slice(_lastCharShapeIndex + 1)) {
+              _next[0] += _diffChar.length;
+            }
+          }
+          // 여기가 마지막 charShapeIndex 일 때
+          else if (_charShapes.length <= _lastCharShapeIndex + 1) {
+            _charShapes.add(
+              [
+                _lastCursorIndex,
+                _currentCharShapeReferenceValue,
+              ],
+            );
+            _charShapes.add(
+              _charShapes[_lastCharShapeIndex].toList()
+                ..[0] = _lastCursorIndex + 1,
+            );
+          } else {
+            // 일단 현재 위치에 현재 textStyle 에 상응하는 charShape 추가
+            _charShapes.insert(
+              _lastCharShapeIndex + 1,
+              [
+                _lastCursorIndex,
+                _currentCharShapeReferenceValue,
+              ],
+            );
+
+            if (_charShapes[_lastCharShapeIndex + 2][0] != _lastCursorIndex) {
+              _charShapes.insert(
+                _lastCharShapeIndex + 2,
+                _charShapes[_lastCharShapeIndex].toList()
+                  ..[0] = _lastCursorIndex,
+              );
+            }
+            // 현재 charShape 뒤로 계속 charShape 가 있으면
+            if (_charShapes.length >= _lastCharShapeIndex + 2) {
+              // 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
+              for (List _next in _charShapes.slice(_lastCharShapeIndex + 2)) {
+                _next[0] += _diffChar.length;
+              }
+            }
+          }
+        }
+        // 현재 텍스트 스타일이 이 이전 것과 같을 때
+        else {
+          // 현재 charShape 뒤로 계속 charShape 가 있으면
+          if (_charShapes.length >= _lastCharShapeIndex + 1) {
+            // 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
+            for (List _next in _charShapes.slice(_lastCharShapeIndex + 1)) {
+              _next[0] += _diffChar.length;
+            }
+          }
+        }
+      }
+      // 텍스트가 제거됐을 때
+      else {
+        // TODO: On text removed
+      }
+    }
 
     _paragraph["text"] = text;
     // charShape 에 다시 할당 (deep copy 로 옮겨졌기 때문)
@@ -91,6 +235,6 @@ class DocumentPageProvider extends ChangeNotifier {
     controller.charShapes = _charShapes;
 
     notifyListeners();
-    print("result:$_charShapes");
+    // print("result:$_charShapes");
   }
 }
