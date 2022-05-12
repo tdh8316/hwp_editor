@@ -35,7 +35,7 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
   void initState() {
     paragraph = widget.paragraph;
     paragraphController = widget.paragraphController;
-    focusNode=widget.focusNode;
+    focusNode = widget.focusNode;
 
     _prevText = paragraphController.text;
 

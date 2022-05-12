@@ -1,15 +1,81 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:collection/collection.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:http/http.dart' as http;
 import 'package:hwp_editor_app/widgets/editor/widget_paragraph.dart';
 
 class DocumentPageProvider extends ChangeNotifier {
-  DocumentPageProvider({required this.hwpDocument});
+  DocumentPageProvider({
+    required this.hwpDocument,
+  });
 
-  final Map<String, dynamic> hwpDocument;
+  Map<String, dynamic> hwpDocument;
+
+  Future<void> openDocument(BuildContext context) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ["hwp", "json"],
+    );
+
+    if (result == null) return;
+
+    if (result.files.single.path!.endsWith(".hwp")) {
+      final File file = File(result.files.single.path!);
+
+      final String encodedData =
+          base64Encode(file.readAsBytesSync()).replaceAll("/", "_");
+      final String uri = Uri.encodeFull(
+        "http://localhost:8080/api/parse/$encodedData",
+      );
+      final http.Response response = await http.get(
+        Uri.parse(uri),
+      );
+
+      if (response.statusCode != 200) {
+        showDialog(
+            context: context,
+            builder: (_) {
+              return ContentDialog(
+                title: Text("Response status code ${response.statusCode}"),
+                content: const Text("Check your connection and try again"),
+                actions: [
+                  Button(
+                      child: const Text("Ok"),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      })
+                ],
+              );
+            });
+        return;
+      }
+
+      hwpDocument = jsonDecode(response.body);
+    } else if (result.files.single.path!.endsWith(".json")) {
+      final File file = File(result.files.single.path!);
+      hwpDocument = jsonDecode(file.readAsStringSync());
+    }
+
+    paragraphControllers.clear();
+    focusNodes.clear();
+    lastFocusedNodeIndex = 0;
+    _currentTextStyle = const TextStyle(
+      fontFamily: "함초롬바탕",
+      fontSize: 10,
+      color: Colors.black,
+    );
+
+    notifyListeners();
+  }
 
   static final List<ParagraphController> paragraphControllers = [];
   static final List<FocusNode> focusNodes = [];
   int lastFocusedNodeIndex = 0;
+
+  void refocusOnLastFocusedWidget() =>
+      focusNodes[lastFocusedNodeIndex].requestFocus();
 
   TextStyle _currentTextStyle = const TextStyle(
     fontFamily: "함초롬바탕",
@@ -25,7 +91,8 @@ class DocumentPageProvider extends ChangeNotifier {
 
   TextStyle get currentTextStyle => _currentTextStyle;
 
-  final TextEditingController fontSizeController = TextEditingController();
+  // final TextEditingController fontSizeController = TextEditingController();
+  final FlyoutController flyoutController = FlyoutController();
 
   double scaleFactor = 1.5;
 

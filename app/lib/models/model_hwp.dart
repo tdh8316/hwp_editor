@@ -13,3 +13,10 @@ TextAlign getTextAlign(int value) {
       return TextAlign.left;
   }
 }
+
+const Map<String, dynamic> emptyDocument = {
+  "docInfo": {},
+  "bodyText": {
+    "sections": [],
+  },
+};

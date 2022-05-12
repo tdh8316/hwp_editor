@@ -24,6 +24,8 @@ class DocumentPage extends StatelessWidget {
             children: [
               _buildCommandBar(context),
               _buildCommandPanel(context),
+              const SizedBox(height: 12),
+              const Divider(),
               SizedBox(
                 child: _buildEditor(context),
                 height: MediaQuery.of(context).size.height - 144,
@@ -145,11 +147,42 @@ class DocumentPage extends StatelessWidget {
   }
 
   Widget _buildCommandBar(BuildContext context) {
+    // final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
+    final DocumentPageProvider read = context.read<DocumentPageProvider>();
     return CommandBar(
       primaryItems: [
-        CommandBarButton(
-          label: const Text("파일"),
-          onPressed: () {},
+        CommandBarBuilderItem(
+          builder: (context, mode, w) => Flyout(
+            openMode: FlyoutOpenMode.press,
+            controller: read.flyoutController,
+            content: (BuildContext context) {
+              return MenuFlyout(
+                items: [
+                  MenuFlyoutItem(
+                    text: const Text("열기"),
+                    leading: const Icon(FluentIcons.open_file),
+                    onPressed: () async => await read.openDocument(context),
+                  ),
+                  MenuFlyoutItem(
+                    text: const Text("저장"),
+                    leading: const Icon(FluentIcons.save),
+                    onPressed: () {
+                      // TODO: Save file
+                      read.flyoutController.close();
+                    },
+                  ),
+                ],
+              );
+            },
+            child: w,
+          ),
+          wrappedItem: CommandBarButton(
+            icon: const Icon(FluentIcons.document),
+            label: const Text("파일"),
+            onPressed: () {
+              read.flyoutController.open();
+            },
+          ),
         ),
         const CommandBarSeparator(),
         CommandBarButton(
@@ -174,33 +207,54 @@ class DocumentPage extends StatelessWidget {
   Widget _buildCommandPanel(BuildContext context) {
     final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
     final DocumentPageProvider read = context.read<DocumentPageProvider>();
-    return CommandBarCard(
-      child: Column(
-        children: [
-          SizedBox(
-            height: 60,
-            child: Row(),
-          ),
-          Container(
-            constraints: const BoxConstraints(
-              minHeight: 20,
+    return Column(
+      children: [
+        SizedBox(
+          height: 60,
+          child: Row(
+              // TODO: Command panel
+              ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            DropDownButton(
+              title: Text(watch.currentTextStyle.fontFamily.toString()),
+              items: [
+                for (String fontName in getFontNames())
+                  MenuFlyoutItem(
+                    text: Text(fontName),
+                    onPressed: () {
+                      read.currentTextStyle = read.currentTextStyle.copyWith(
+                        fontFamily: fontName,
+                      );
+                      read.refocusOnLastFocusedWidget();
+                    },
+                  ),
+              ],
             ),
-            child: Row(
-              children: [
-                DropDownButton(
-                  title: Text(watch.currentTextStyle.fontFamily.toString()),
-                  items: [
-                    for (String fontName in getFontNames())
-                      MenuFlyoutItem(
-                        text: Text(fontName),
-                        onPressed: () {
-                          read.currentTextStyle = read.currentTextStyle
-                              .copyWith(fontFamily: fontName);
-                        },
-                      ),
-                  ],
-                ),
-                ToggleButton(
+            const SizedBox(width: 8),
+            DropDownButton(
+              title: Text("${watch.currentTextStyle.fontSize?.toInt()}"),
+              items: [
+                for (int i = 2; i <= 128; i += 2)
+                  MenuFlyoutItem(
+                    text: Text(i.toString()),
+                    onPressed: () {
+                      read.currentTextStyle = read.currentTextStyle.copyWith(
+                        fontSize: i.toDouble(),
+                      );
+                      read.refocusOnLastFocusedWidget();
+                    },
+                  )
+              ],
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              height: 28,
+              child: Tooltip(
+                message: "진하게",
+                child: ToggleButton(
                   checked: watch.currentTextStyle.fontWeight == FontWeight.bold,
                   onChanged: (bool checked) {
                     if (checked) {
@@ -212,23 +266,53 @@ class DocumentPage extends StatelessWidget {
                         fontWeight: FontWeight.normal,
                       );
                     }
-                    DocumentPageProvider.focusNodes[read.lastFocusedNodeIndex]
-                        .requestFocus();
+                    read.refocusOnLastFocusedWidget();
                   },
-                  child: Text("Bold"),
+                  child: const Icon(FluentIcons.bold_korean),
                 ),
-                SizedBox(
-                  width: 64,
-                  child: TextBox(
-                    controller: read.fontSizeController
-                      ..text = watch.currentTextStyle.fontSize.toString(),
-                  ),
-                )
-              ],
+              ),
             ),
-          )
-        ],
-      ),
+            const SizedBox(width: 2),
+            SizedBox(
+              height: 28,
+              child: Tooltip(
+                message: "기울임",
+                child: ToggleButton(
+                  checked: watch.currentTextStyle.fontStyle == FontStyle.italic,
+                  onChanged: (bool checked) {
+                    if (checked) {
+                      read.currentTextStyle = read.currentTextStyle.copyWith(
+                        fontStyle: FontStyle.italic,
+                      );
+                    } else {
+                      read.currentTextStyle = read.currentTextStyle.copyWith(
+                        fontStyle: FontStyle.normal,
+                      );
+                    }
+                    read.refocusOnLastFocusedWidget();
+                  },
+                  child: const Icon(FluentIcons.italic_korean),
+                ),
+              ),
+            ),
+            const SizedBox(width: 2),
+            SizedBox(
+              height: 28,
+              child: Tooltip(
+                message: "밑줄",
+                child: ToggleButton(
+                  checked: false,
+                  onChanged: (bool checked) {
+                    read.refocusOnLastFocusedWidget();
+                  },
+                  child: const Icon(FluentIcons.underline_korean),
+                ),
+              ),
+            ),
+            const SizedBox(width: 2),
+          ],
+        )
+      ],
     );
   }
 }
