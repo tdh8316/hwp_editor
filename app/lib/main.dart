@@ -14,10 +14,10 @@ class HWPEditorApplication extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const FluentApp(
+    return FluentApp(
       title: "HWP Editor",
       debugShowCheckedModeBanner: true,
-      home: DocumentPage(docData: emptyDocument),
+      home: DocumentPage(docData: testData()),
     );
   }
 }

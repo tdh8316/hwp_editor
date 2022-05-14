@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:hwp_editor_app/widgets/editor/widget_paragraph.dart';
@@ -15,14 +15,15 @@ class DocumentPageProvider extends ChangeNotifier {
   Map<String, dynamic> hwpDocument;
 
   Future<void> openDocument(BuildContext context) async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowedExtensions: ["hwp", "json"],
+    FilePickerCross result = await FilePickerCross.importFromStorage(
+      type: FileTypeCross.custom,
+      fileExtension: "hwp, json",
     );
 
-    if (result == null) return;
+    if (result.path == null) return;
 
-    if (result.files.single.path!.endsWith(".hwp")) {
-      final File file = File(result.files.single.path!);
+    if (result.path!.endsWith(".hwp")) {
+      final File file = File(result.path!);
 
       final String encodedData =
           base64Encode(file.readAsBytesSync()).replaceAll("/", "_");
@@ -35,29 +36,32 @@ class DocumentPageProvider extends ChangeNotifier {
 
       if (response.statusCode != 200) {
         showDialog(
-            context: context,
-            builder: (_) {
-              return ContentDialog(
-                title: Text("Response status code ${response.statusCode}"),
-                content: const Text("Check your connection and try again"),
-                actions: [
-                  Button(
-                      child: const Text("Ok"),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      })
-                ],
-              );
-            });
+          context: context,
+          builder: (_) {
+            return ContentDialog(
+              title: Text("Response status code ${response.statusCode}"),
+              content: const Text("Check your connection and try again"),
+              actions: [
+                Button(
+                  child: const Text("Ok"),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                )
+              ],
+            );
+          },
+        );
         return;
       }
 
       hwpDocument = jsonDecode(response.body);
-    } else if (result.files.single.path!.endsWith(".json")) {
-      final File file = File(result.files.single.path!);
+    } else if (result.path!.endsWith(".json")) {
+      final File file = File(result.path!);
       hwpDocument = jsonDecode(file.readAsStringSync());
     }
 
+    // Initialization
     paragraphControllers.clear();
     focusNodes.clear();
     lastFocusedNodeIndex = 0;

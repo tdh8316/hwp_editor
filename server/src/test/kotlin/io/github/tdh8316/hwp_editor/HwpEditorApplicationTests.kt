@@ -10,7 +10,7 @@ class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
-        val bytearray = File("../tests/script.hwp").readBytes()
+        val bytearray = File("../tests/empty.hwp").readBytes()
 
         // println(Base64.encodeBase64String(bytearray))
 
@@ -20,7 +20,7 @@ class HwpEditorApplicationTests {
         val gson = GsonBuilder().setPrettyPrinting().create()
         val res = (gson.toJson(parsed))
 
-        val f = File("../tests/script.json")
+        val f = File("../tests/empty.json")
         f.createNewFile()
         f.writeText(res)
 
