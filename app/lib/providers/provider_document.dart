@@ -296,7 +296,23 @@ class DocumentPageProvider extends ChangeNotifier {
       }
       // 텍스트가 제거됐을 때
       else {
-        // TODO: On text removed
+        final int _charShapeIndex = controller.getCurrentCharShapeIndex(
+          adjust: -1,
+        );
+
+        // 뒤로 charShape 가 계속 있으면
+        final List<int> _targetIndex = [];
+        if (_charShapes.length >= _charShapeIndex + 1) {
+          for (int i = _charShapeIndex + 1; i < _charShapes.length; i++) {
+            _charShapes[i][0] -= 1;
+            if (_charShapes[i - 1][0] == _charShapes[i][0]) {
+              _targetIndex.add(i - 1);
+            }
+          }
+          for (int i in _targetIndex) {
+            _charShapes.removeAt(i);
+          }
+        }
       }
     }
 
