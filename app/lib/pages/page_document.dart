@@ -26,12 +26,7 @@ class DocumentPage extends StatelessWidget {
               _buildCommandPanel(context),
               const SizedBox(height: 12),
               const Divider(),
-              SizedBox(
-                child: _buildEditor(context),
-                height: MediaQuery.of(context).size.height - 144,
-                width: 770,
-                // width: MediaQuery.of(context).size.width,
-              ),
+              _buildEditor(context),
             ],
           );
         },
@@ -42,18 +37,22 @@ class DocumentPage extends StatelessWidget {
   Widget _buildEditor(BuildContext context) {
     final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
     // final DocumentPageProvider read = context.read<DocumentPageProvider>();
-    return Padding(
-      padding: const EdgeInsets.all(32),
-      child: SingleChildScrollView(
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.all(48),
-            child: MediaQuery(
-              data: MediaQueryData(
-                textScaleFactor: watch.scaleFactor,
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - 144,
+      width: 770 * (watch.scaleFactor-0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: SingleChildScrollView(
+          child: Container(
+            color: Colors.white,
+            child: Padding(
+              padding: const EdgeInsets.all(48),
+              child: MediaQuery(
+                data: MediaQueryData(
+                  textScaleFactor: watch.scaleFactor,
+                ),
+                child: _buildSections(context),
               ),
-              child: _buildSections(context),
             ),
           ),
         ),

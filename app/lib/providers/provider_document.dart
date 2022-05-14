@@ -22,6 +22,17 @@ class DocumentPageProvider extends ChangeNotifier {
 
     if (result.path == null) return;
 
+    hwpDocument = {};
+    // Initialization
+    paragraphControllers.clear();
+    focusNodes.clear();
+    lastFocusedNodeIndex = 0;
+    _currentTextStyle = const TextStyle(
+      fontFamily: "함초롬바탕",
+      fontSize: 10,
+      color: Colors.black,
+    );
+
     if (result.path!.endsWith(".hwp")) {
       final File file = File(result.path!);
 
@@ -60,16 +71,6 @@ class DocumentPageProvider extends ChangeNotifier {
       final File file = File(result.path!);
       hwpDocument = jsonDecode(file.readAsStringSync());
     }
-
-    // Initialization
-    paragraphControllers.clear();
-    focusNodes.clear();
-    lastFocusedNodeIndex = 0;
-    _currentTextStyle = const TextStyle(
-      fontFamily: "함초롬바탕",
-      fontSize: 10,
-      color: Colors.black,
-    );
 
     notifyListeners();
   }
@@ -132,9 +133,40 @@ class DocumentPageProvider extends ChangeNotifier {
     if (_allCharShapes.contains(textStyle)) {
       return _allCharShapes.indexOf(textStyle);
     } else {
-      // final int _index = (hwpDocument["docInfo"]["charShapeList"] as List).length + 1;
-      // TODO: Add charShape
-      return 0;
+      // 기존에 없다면 charShapeList 에 새롭게 추가
+      // 폰트가 faceNameList 에 있는지 확인
+      final List<String> _faceNameList =
+          (hwpDocument["docInfo"]["hangulFaceNameList"] as List)
+              .map(
+                (_map) => _map["name"] as String,
+              )
+              .toList(growable: false);
+      late final int _faceNameIndex;
+      // 없으면 추가
+      if (!_faceNameList.contains(textStyle.fontFamily)) {
+        final List _faceNameMaps =
+            (hwpDocument["docInfo"]["hangulFaceNameList"] as List);
+        _faceNameMaps.add(
+          {"name": textStyle.fontFamily, "baseFontName": ""},
+        );
+        _faceNameIndex = _faceNameMaps.length - 1;
+      } else {
+        _faceNameIndex = _faceNameList.indexOf(textStyle.fontFamily!);
+      }
+
+      final Map _charShapeData = {
+        "faceNameIds": List<int>.filled(7, _faceNameIndex),
+        "baseSize": textStyle.fontSize! * 100,
+        "charColor": 0,
+        "isItalic": textStyle.fontStyle == FontStyle.italic,
+        "isBold": textStyle.fontWeight == FontWeight.bold,
+      };
+
+      final List _charShapeList =
+          hwpDocument["docInfo"]["charShapeList"] as List;
+      _charShapeList.add(_charShapeData);
+
+      return _charShapeList.length - 1;
     }
   }
 
@@ -193,16 +225,15 @@ class DocumentPageProvider extends ChangeNotifier {
 
     // 문자가 지워지거나 추가됐을 때만
     if (_diffChar.isNotEmpty) {
-      final bool _isKor = RegExp(r"^[ㄱ-ㅎㅏ-ㅣ가-힣]+$").hasMatch(_diffChar);
+      // final bool _isKor = RegExp(r"^[ㄱ-ㅎㅏ-ㅣ가-힣]+$").hasMatch(_diffChar);
 
       // 텍스트가 추가됐을 때
       if (text.length > prevText.length) {
-        // 한국어 입력중일 때(커서가 한 칸 뒤에 있음)는 그대로, 아닐땐 - 1
         final int _lastCursorIndex = controller.getCursor(
-          adjust: _isKor ? 0 : 1,
+          adjust: 1,
         );
         final int _lastCharShapeIndex = controller.getCurrentCharShapeIndex(
-          adjust: _isKor ? 0 : 1,
+          adjust: 1,
         );
 
         final TextStyle _lastTextStyle = getTextStyleFromCharShape(
