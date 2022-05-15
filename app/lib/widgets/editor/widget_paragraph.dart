@@ -77,6 +77,7 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
         );
         _prevText = text;
       },
+      textDirection: TextDirection.ltr,
     );
 
     return Material(child: textField);

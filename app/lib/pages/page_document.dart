@@ -1,4 +1,5 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:flutter/material.dart' show Scaffold;
 import 'package:hwp_editor_app/models/model_fonts.dart';
 import 'package:hwp_editor_app/providers/provider_document.dart';
 import 'package:hwp_editor_app/widgets/editor/widget_paragraph.dart';
@@ -14,20 +15,22 @@ class DocumentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationView(
-      content: ChangeNotifierProvider<DocumentPageProvider>(
+    return Scaffold(
+      body: ChangeNotifierProvider<DocumentPageProvider>(
         create: (BuildContext context) => DocumentPageProvider(
           hwpDocument: docData,
         ),
         builder: (BuildContext context, _) {
-          return Column(
-            children: [
-              _buildCommandBar(context),
-              _buildCommandPanel(context),
-              const SizedBox(height: 12),
-              const Divider(),
-              _buildEditor(context),
-            ],
+          return SafeArea(
+            child: ListView(
+              children: [
+                _buildCommandBar(context),
+                _buildCommandPanel(context),
+                const SizedBox(height: 12),
+                const Divider(),
+                _buildEditor(context),
+              ],
+            ),
           );
         },
       ),
@@ -38,8 +41,8 @@ class DocumentPage extends StatelessWidget {
     final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
     // final DocumentPageProvider read = context.read<DocumentPageProvider>();
     return SizedBox(
-      height: MediaQuery.of(context).size.height - 144,
-      width: 770 * (watch.scaleFactor-0.5),
+      height: MediaQuery.of(context).size.height - 181,
+      width: 770 * (watch.scaleFactor - 0.5),
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: SingleChildScrollView(
