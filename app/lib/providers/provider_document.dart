@@ -154,7 +154,7 @@ class DocumentPageProvider extends ChangeNotifier {
         _faceNameIndex = _faceNameList.indexOf(textStyle.fontFamily!);
       }
 
-      final Map _charShapeData = {
+      final Map<String, Object> _charShapeData = {
         "faceNameIds": List<int>.filled(7, _faceNameIndex),
         "baseSize": textStyle.fontSize! * 100,
         "charColor": 0,
@@ -162,9 +162,9 @@ class DocumentPageProvider extends ChangeNotifier {
         "isBold": textStyle.fontWeight == FontWeight.bold,
       };
 
-      final List _charShapeList =
-          hwpDocument["docInfo"]["charShapeList"] as List;
-      _charShapeList.add(_charShapeData);
+      final List<Map<String, Object>> _charShapeList =
+          hwpDocument["docInfo"]["charShapeList"] as List<Map<String, Object>>;
+      _charShapeList.add(Map<String, Object>.from(_charShapeData));
 
       return _charShapeList.length - 1;
     }
