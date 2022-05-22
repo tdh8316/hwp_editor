@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:collection/collection.dart';
-import 'package:file_picker_cross/file_picker_cross.dart';
 import 'package:fluent_ui/fluent_ui.dart';
 import 'package:http/http.dart' as http;
 import 'package:hwp_editor_app/widgets/editor/widget_paragraph.dart';
@@ -13,14 +12,54 @@ class DocumentPageProvider extends ChangeNotifier {
   });
 
   Map<String, dynamic> hwpDocument;
+  static final List<ParagraphController> paragraphControllers = [];
+  static final List<FocusNode> focusNodes = [];
+  int lastFocusedNodeIndex = 0;
+
+  final FlyoutController flyoutController = FlyoutController();
+
+  TextStyle _currentTextStyle = const TextStyle(
+    fontFamily: "함초롬바탕",
+    fontSize: 10,
+    color: Colors.black,
+  );
+
+  TextStyle get currentTextStyle => _currentTextStyle;
+
+  set currentTextStyle(TextStyle _new) {
+    _currentTextStyle = _new;
+    notifyListeners();
+  }
+
+  double _scaleFactor = 1.5;
+
+  double get scaleFactor => _scaleFactor;
+
+  set scaleFactor(double _new) {
+    _scaleFactor = _new;
+    notifyListeners();
+  }
+
+  void refocusOnLastFocusedWidget() =>
+      focusNodes[lastFocusedNodeIndex].requestFocus();
+
+  Future<void> saveDocument(BuildContext context) async {
+    final String encodedData =
+        base64Encode(utf8.encode(jsonEncode(hwpDocument))).replaceAll("/", "_");
+    final String uri = Uri.encodeFull(
+      "http://localhost:8080/api/write/$encodedData",
+    );
+    final http.Response response = await http.get(
+      Uri.parse(uri),
+    );
+    final File f=File("../tests/res.hwp");
+    f.createSync();
+    f.writeAsBytesSync(response.bodyBytes);
+    flyoutController.close();
+  }
 
   Future<void> openDocument(BuildContext context) async {
-    FilePickerCross result = await FilePickerCross.importFromStorage(
-      type: FileTypeCross.custom,
-      fileExtension: "hwp, json",
-    );
-
-    if (result.path == null) return;
+    String filePath = "../tests/align.json";
 
     hwpDocument = {};
     // Initialization
@@ -33,8 +72,8 @@ class DocumentPageProvider extends ChangeNotifier {
       color: Colors.black,
     );
 
-    if (result.path!.endsWith(".hwp")) {
-      final File file = File(result.path!);
+    if (filePath.endsWith(".hwp")) {
+      final File file = File(filePath);
 
       final String encodedData =
           base64Encode(file.readAsBytesSync()).replaceAll("/", "_");
@@ -67,42 +106,11 @@ class DocumentPageProvider extends ChangeNotifier {
       }
 
       hwpDocument = jsonDecode(response.body);
-    } else if (result.path!.endsWith(".json")) {
-      final File file = File(result.path!);
+    } else if (filePath.endsWith(".json")) {
+      final File file = File(filePath);
       hwpDocument = jsonDecode(file.readAsStringSync());
     }
 
-    notifyListeners();
-  }
-
-  static final List<ParagraphController> paragraphControllers = [];
-  static final List<FocusNode> focusNodes = [];
-  int lastFocusedNodeIndex = 0;
-
-  void refocusOnLastFocusedWidget() =>
-      focusNodes[lastFocusedNodeIndex].requestFocus();
-
-  TextStyle _currentTextStyle = const TextStyle(
-    fontFamily: "함초롬바탕",
-    fontSize: 10,
-    color: Colors.black,
-  );
-
-  set currentTextStyle(TextStyle _new) {
-    _currentTextStyle = _new;
-    notifyListeners();
-    // print(_currentTextStyle);
-  }
-
-  TextStyle get currentTextStyle => _currentTextStyle;
-
-  // final TextEditingController fontSizeController = TextEditingController();
-  final FlyoutController flyoutController = FlyoutController();
-
-  double scaleFactor = 1.5;
-
-  void setTextScaleFactor(double _new) {
-    scaleFactor = _new;
     notifyListeners();
   }
 

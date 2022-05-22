@@ -1,5 +1,4 @@
 import 'package:fluent_ui/fluent_ui.dart';
-import 'package:flutter/material.dart' show Scaffold;
 import 'package:hwp_editor_app/models/model_fonts.dart';
 import 'package:hwp_editor_app/providers/provider_document.dart';
 import 'package:hwp_editor_app/widgets/editor/widget_paragraph.dart';
@@ -15,14 +14,14 @@ class DocumentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ChangeNotifierProvider<DocumentPageProvider>(
+    return NavigationView(
+      content: ChangeNotifierProvider<DocumentPageProvider>(
         create: (BuildContext context) => DocumentPageProvider(
           hwpDocument: docData,
         ),
         builder: (BuildContext context, _) {
           return SafeArea(
-            child: ListView(
+            child: Column(
               children: [
                 _buildCommandBar(context),
                 _buildCommandPanel(context),
@@ -40,22 +39,18 @@ class DocumentPage extends StatelessWidget {
   Widget _buildEditor(BuildContext context) {
     final DocumentPageProvider watch = context.watch<DocumentPageProvider>();
     // final DocumentPageProvider read = context.read<DocumentPageProvider>();
-    return SizedBox(
-      height: MediaQuery.of(context).size.height - 181,
-      width: 770 * (watch.scaleFactor - 0.5),
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: SingleChildScrollView(
+    return Expanded(
+      child: SingleChildScrollView(
+        child: InteractiveViewer(
+          scaleEnabled: false,
           child: Container(
+            width: 770,
             color: Colors.white,
-            child: Padding(
-              padding: const EdgeInsets.all(48),
-              child: MediaQuery(
-                data: MediaQueryData(
-                  textScaleFactor: watch.scaleFactor,
-                ),
-                child: _buildSections(context),
+            child: MediaQuery(
+              data: MediaQueryData(
+                textScaleFactor: watch.scaleFactor,
               ),
+              child: _buildSections(context),
             ),
           ),
         ),
@@ -142,7 +137,7 @@ class DocumentPage extends StatelessWidget {
     }
 
     return ParagraphWidget(
-      paragraph: _paragraphs[paragraphIndex],
+      paragraph: _paragraph,
       paragraphController: _paragraphController,
       focusNode: _focusNode,
     );
@@ -168,10 +163,7 @@ class DocumentPage extends StatelessWidget {
                   MenuFlyoutItem(
                     text: const Text("저장"),
                     leading: const Icon(FluentIcons.save),
-                    onPressed: () {
-                      // TODO: Save file
-                      read.flyoutController.close();
-                    },
+                    onPressed: () async => await read.saveDocument(context),
                   ),
                 ],
               );
