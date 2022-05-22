@@ -53,8 +53,8 @@ class HWPDocumentModel {
   List<TextStyle> getCharShapes() {
     List<TextStyle> list = [];
     for (int i = 0;
-    i < (jsonData["docInfo"]["charShapeList"] as List).length;
-    i++) {
+        i < (jsonData["docInfo"]["charShapeList"] as List).length;
+        i++) {
       list.add(getTextStyleFromCharShape(i));
     }
     return list;
@@ -64,7 +64,7 @@ class HWPDocumentModel {
     final Map data = jsonData["docInfo"]["charShapeList"][charShapeIndex];
     return TextStyle(
       fontFamily: jsonData["docInfo"]["hangulFaceNameList"]
-      [data["faceNameIds"][0]]["name"],
+          [data["faceNameIds"][0]]["name"],
       fontSize: data["baseSize"] / 100.0,
       color: Colors.black,
       fontWeight: data["isBold"] ? FontWeight.bold : FontWeight.normal,
@@ -80,16 +80,16 @@ class HWPDocumentModel {
       // 기존에 없다면 charShapeList 에 새롭게 추가
       // 폰트가 faceNameList 에 있는지 확인
       final List<String> faceNameList =
-      (jsonData["docInfo"]["hangulFaceNameList"] as List)
-          .map(
-            (map) => map["name"] as String,
-      )
-          .toList(growable: false);
+          (jsonData["docInfo"]["hangulFaceNameList"] as List)
+              .map(
+                (map) => map["name"] as String,
+              )
+              .toList(growable: false);
       late final int faceNameIndex;
       // 없으면 추가
       if (!faceNameList.contains(textStyle.fontFamily)) {
         final List faceNameMaps =
-        (jsonData["docInfo"]["hangulFaceNameList"] as List);
+            (jsonData["docInfo"]["hangulFaceNameList"] as List);
         faceNameMaps.add(
           {"name": textStyle.fontFamily, "baseFontName": ""},
         );
@@ -106,8 +106,7 @@ class HWPDocumentModel {
         "isBold": textStyle.fontWeight == FontWeight.bold,
       };
 
-      final List<Map<String, Object>> charShapeList =
-      jsonData["docInfo"]["charShapeList"] as List<Map<String, Object>>;
+      final List charShapeList = jsonData["docInfo"]["charShapeList"] as List;
       charShapeList.add(Map<String, Object>.from(charShapeData));
 
       return charShapeList.length - 1;
