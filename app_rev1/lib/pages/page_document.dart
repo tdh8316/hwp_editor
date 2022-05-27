@@ -166,21 +166,21 @@ class DocumentPage extends StatelessWidget {
           ),
         ),
         const CommandBarSeparator(),
-        CommandBarButton(
-          icon: const Icon(FluentIcons.edit),
-          label: const Text("편집"),
-          onPressed: () => read.panelIndex = 0,
-        ),
-        CommandBarButton(
-          icon: const Icon(FluentIcons.insert),
-          label: const Text("삽입"),
-          onPressed: () => read.panelIndex = 1,
-        ),
-        CommandBarButton(
-          icon: const Icon(FluentIcons.format_painter),
-          label: const Text("서식"),
-          onPressed: () => read.panelIndex = 2,
-        ),
+        // CommandBarButton(
+        //   icon: const Icon(FluentIcons.edit),
+        //   label: const Text("편집"),
+        //   onPressed: () => read.panelIndex = 0,
+        // ),
+        // CommandBarButton(
+        //   icon: const Icon(FluentIcons.insert),
+        //   label: const Text("삽입"),
+        //   onPressed: () => read.panelIndex = 1,
+        // ),
+        // CommandBarButton(
+        //   icon: const Icon(FluentIcons.format_painter),
+        //   label: const Text("서식"),
+        //   onPressed: () => read.panelIndex = 2,
+        // ),
       ],
     );
   }
@@ -189,6 +189,7 @@ class DocumentPage extends StatelessWidget {
     final DocumentProvider read = context.read<DocumentProvider>();
     final DocumentProvider watch = context.watch<DocumentProvider>();
     return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Tooltip(
           message: "글씨체",
@@ -274,20 +275,20 @@ class DocumentPage extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 2),
-        SizedBox(
-          height: 28,
-          child: Tooltip(
-            message: "밑줄",
-            child: ToggleButton(
-              checked: false,
-              onChanged: (bool checked) {
-                // TODO: Underline
-                read.refocusOnTheLastFocusedWidget();
-              },
-              child: const Icon(FluentIcons.underline_korean),
-            ),
-          ),
-        ),
+        // SizedBox(
+        //   height: 28,
+        //   child: Tooltip(
+        //     message: "밑줄",
+        //     child: ToggleButton(
+        //       checked: false,
+        //       onChanged: (bool checked) {
+        //         // TODO: Underline
+        //         read.refocusOnTheLastFocusedWidget();
+        //       },
+        //       child: const Icon(FluentIcons.underline_korean),
+        //     ),
+        //   ),
+        // ),
         const SizedBox(width: 8),
         SizedBox(
           height: 28,

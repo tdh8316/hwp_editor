@@ -33,7 +33,7 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
     return IntrinsicHeight(
       child: TextField(
         focusNode: watch.d.paragraphFocusNodes[widget.paragraphIndex]
-        ..onKey =read.onKeyOnParagraphWidget,
+          ..onKey = read.onKeyOnParagraphWidget,
         controller: paragraphController,
         decoration: const InputDecoration(
           hintText: null,
@@ -42,6 +42,7 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
           isDense: true,
           border: InputBorder.none,
           contentPadding: EdgeInsets.only(bottom: 6),
+          hoverColor: Colors.white,
         ),
         style: watch.currentTextStyle,
         strutStyle: StrutStyle(
