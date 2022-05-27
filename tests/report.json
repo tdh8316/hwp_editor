@@ -120,71 +120,99 @@
     "paraShapeList": [
       {
         "alignment": 3,
+        "property1Value": 268,
+        "leftMargin": 0,
         "lineSpace": 160,
         "tabDefId": 0
       },
       {
         "alignment": 2,
+        "property1Value": 264,
+        "leftMargin": 0,
         "lineSpace": 160,
         "tabDefId": 0
       },
       {
         "alignment": 1,
+        "property1Value": 260,
+        "leftMargin": 0,
         "lineSpace": 130,
         "tabDefId": 0
       },
       {
         "alignment": 0,
+        "property1Value": 384,
+        "leftMargin": 0,
         "lineSpace": 130,
         "tabDefId": 0
       },
       {
         "alignment": 0,
+        "property1Value": 256,
+        "leftMargin": 0,
         "lineSpace": 150,
         "tabDefId": 0
       },
       {
         "alignment": 0,
+        "property1Value": 384,
+        "leftMargin": 0,
         "lineSpace": 160,
         "tabDefId": 0
       },
       {
         "alignment": 0,
+        "property1Value": 209725824,
+        "leftMargin": 14000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 176171392,
+        "leftMargin": 12000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 142616960,
+        "leftMargin": 10000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 109062528,
+        "leftMargin": 8000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 75508096,
+        "leftMargin": 6000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 41953664,
+        "leftMargin": 4000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 8399232,
+        "leftMargin": 2000,
         "lineSpace": 160,
         "tabDefId": 1
       },
       {
         "alignment": 0,
+        "property1Value": 384,
+        "leftMargin": 3000,
         "lineSpace": 160,
         "tabDefId": 0
       }
@@ -195,7 +223,7 @@
       {
         "paragraphs": [
           {
-            "text": "나는 평범하게도",
+            "text": "나는 평범하게도(원본)",
             "charShapes": [
               [
                 0,
@@ -203,7 +231,20 @@
               ]
             ],
             "paraShapeId": 0,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 0,
+                "lineHeight": 2000,
+                "textPartHeight": 2000,
+                "distanceBaseLineToLineVerticalPosition": 1700,
+                "lineSpace": 1200,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": "",
@@ -214,7 +255,20 @@
               ]
             ],
             "paraShapeId": 1,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 3200,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": "나는 얼마나 평범한가?",
@@ -225,7 +279,20 @@
               ]
             ],
             "paraShapeId": 1,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 4800,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": "",
@@ -236,7 +303,20 @@
               ]
             ],
             "paraShapeId": 5,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 6400,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": "\u003c서론\u003e",
@@ -247,7 +327,20 @@
               ]
             ],
             "paraShapeId": 5,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 8000,
+                "lineHeight": 1400,
+                "textPartHeight": 1400,
+                "distanceBaseLineToLineVerticalPosition": 1190,
+                "lineSpace": 840,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": " “그래서 우리는 조류를 거스르는 배처럼, 끊임없이 과거로 떠밀려가면서도 앞으로 계속 나아가는 것이다.” 프랜시스 스콧 피츠제럴드의 고전 소설 『위대한 개츠비』에서 ‘닉 캐러웨이’가 마지막으로 한 말이다.",
@@ -258,7 +351,40 @@
               ]
             ],
             "paraShapeId": 5,
-            "styleId": 0
+            "lineAlignCount": 3,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 10240,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              },
+              {
+                "textStartPosition": 50,
+                "lineVerticalPosition": 11840,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              },
+              {
+                "textStartPosition": 102,
+                "lineVerticalPosition": 13440,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": "",
@@ -269,7 +395,20 @@
               ]
             ],
             "paraShapeId": 5,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 15040,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": "\u003c평범하다는 것은\u003e",
@@ -280,7 +419,20 @@
               ]
             ],
             "paraShapeId": 5,
-            "styleId": 0
+            "lineAlignCount": 1,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 16640,
+                "lineHeight": 1400,
+                "textPartHeight": 1400,
+                "distanceBaseLineToLineVerticalPosition": 1190,
+                "lineSpace": 840,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           },
           {
             "text": " 질문의 대답을 생각해보기 전에 평범하다는 것이 과연 무엇인지 숙고하는 단계가 있었다. 평범함에 관해 숙고하여 내린 결론은 기본적으로 ‘예측할 수 있는 상태’라는 것이다.",
@@ -291,7 +443,30 @@
               ]
             ],
             "paraShapeId": 5,
-            "styleId": 0
+            "lineAlignCount": 2,
+            "styleId": 0,
+            "lineSeg": [
+              {
+                "textStartPosition": 0,
+                "lineVerticalPosition": 18880,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              },
+              {
+                "textStartPosition": 50,
+                "lineVerticalPosition": 20480,
+                "lineHeight": 1000,
+                "textPartHeight": 1000,
+                "distanceBaseLineToLineVerticalPosition": 850,
+                "lineSpace": 600,
+                "segmentWidth": 42520,
+                "tagValue": 393216
+              }
+            ]
           }
         ]
       }

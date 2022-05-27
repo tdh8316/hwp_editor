@@ -19,8 +19,6 @@ class Writer {
         // 빈 hwp 파일 생성
         val hwpFile: HWPFile = BlankFileMaker.make()
 
-        hwpFile.fileHeader.isCompressed = true
-
         // 글꼴 데이터 저장
         writeDocInfo(hwpFile, document.docInfo)
 
@@ -60,6 +58,8 @@ class Writer {
         }
 
         for (j in 0 until hwpFile.docInfo.paraShapeList.count()) {
+            hwpFile.docInfo.paraShapeList[j].property1.value = docInfo.paraShapeList[j].property1Value
+            hwpFile.docInfo.paraShapeList[j].leftMargin = docInfo.paraShapeList[j].leftMargin
             hwpFile.docInfo.paraShapeList[j].property1.alignment =
                 when (docInfo.paraShapeList[j].alignment) {
                     0 -> Alignment.Justify
@@ -74,6 +74,8 @@ class Writer {
 
         for (paraShape in docInfo.paraShapeList.slice(hwpFile.docInfo.paraShapeList.count() until docInfo.paraShapeList.count())) {
             val currentParaShape = hwpFile.docInfo.addNewParaShape()
+            currentParaShape.property1.value = paraShape.property1Value
+            currentParaShape.leftMargin = paraShape.leftMargin
             currentParaShape.property1.alignment = when (paraShape.alignment) {
                 0 -> Alignment.Justify
                 1 -> Alignment.Left
@@ -97,27 +99,14 @@ class Writer {
             } else {
                 hwpFile.bodyText.sectionList.last()
             }
-
-            // section 에는 최소 1개 이상의 paragraph 가 존재하므로
-            // 빈 paragraph 가 생기지 않도록 기존 paragraph 한 번 사용
-            var useDefaultParagraph = true
             for (paragraph in section.paragraphs) {
-                val currentParagraph = if (!useDefaultParagraph) {
-                    currentSection.addNewParagraph()
-
-                } else {
-                    currentSection.paragraphs.last()
-                }
-
+                val currentParagraph = currentSection.addNewParagraph()
                 buildParagraph(currentParagraph, paragraph)
-
-                useDefaultParagraph = false
             }
             currentSection.paragraphs.last().header.isLastInList = true
 
             useDefaultSection = false
         }
-
     }
 
     private fun buildParagraph(currentParagraph: Paragraph, paragraph: ParagraphDataModel) {
@@ -125,12 +114,14 @@ class Writer {
         header.isLastInList = false
         header.characterCount = paragraph.text.count().toLong()
         header.paraShapeId = paragraph.paraShapeId
+        header.lineAlignCount = paragraph.lineAlignCount
         header.styleId = paragraph.styleId
         header.charShapeCount = paragraph.charShapes.count()
         header.rangeTagCount = 0
         header.lineAlignCount = 1
         header.instanceID = 0
         header.isMergedByTrack = 0
+        header.controlMask.value = 0
 
         currentParagraph.createText()
         currentParagraph.text.addString(paragraph.text)
@@ -142,10 +133,16 @@ class Writer {
         }
 
         currentParagraph.createLineSeg()
-        val lsi = currentParagraph.lineSeg.addNewLineSegItem()
-        lsi.textStartPosition = 0
-        lsi.lineVerticalPosition = 0
-        lsi.tag.firstSegmentAtLine = true
-        lsi.tag.lastSegmentAtLine = true
+        for (lineSegItem in paragraph.lineSeg) {
+            val lsi = currentParagraph.lineSeg.addNewLineSegItem()
+            lsi.textStartPosition = lineSegItem.textStartPosition
+            lsi.lineVerticalPosition = lineSegItem.lineVerticalPosition
+            lsi.lineHeight = lineSegItem.lineHeight
+            lsi.textPartHeight = lineSegItem.textPartHeight
+            lsi.distanceBaseLineToLineVerticalPosition = lineSegItem.distanceBaseLineToLineVerticalPosition
+            lsi.lineSpace = lineSegItem.lineSpace
+            lsi.segmentWidth = lineSegItem.segmentWidth
+            lsi.tag.value = lineSegItem.tagValue
+        }
     }
 }

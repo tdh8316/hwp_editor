@@ -59,6 +59,8 @@ class HWPParser {
             parsed.docInfo.paraShapeList.add(
                 ParaShape(
                     alignment = paraShape.property1.alignment.ordinal,
+                    property1Value = paraShape.property1.value,
+                    leftMargin = paraShape.leftMargin,
                     lineSpace = paraShape.lineSpace2,
                     tabDefId = paraShape.tabDefId,
                 )
@@ -89,8 +91,21 @@ class HWPParser {
                 arrayListOf(shape.position, shape.shapeId)
             },
             paraShapeId = paragraph.header.paraShapeId,
+            lineAlignCount = paragraph.header.lineAlignCount,
             styleId = paragraph.header.styleId,
             table = buildTableDataModel(paragraph),
+            lineSeg = paragraph.lineSeg.lineSegItemList.map { item ->
+                LineSegItemDataModel(
+                    textStartPosition = item.textStartPosition,
+                    lineVerticalPosition = item.lineVerticalPosition,
+                    lineHeight = item.lineHeight,
+                    textPartHeight = item.textPartHeight,
+                    distanceBaseLineToLineVerticalPosition = item.distanceBaseLineToLineVerticalPosition,
+                    lineSpace = item.lineSpace,
+                    segmentWidth = item.segmentWidth,
+                    tagValue = item.tag.value,
+                )
+            }
         )
     }
 

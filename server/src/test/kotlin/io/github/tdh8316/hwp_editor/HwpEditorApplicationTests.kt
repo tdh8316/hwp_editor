@@ -19,9 +19,10 @@ class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
-        val f1 = HWPReader.fromFile("../tests/report_res.hwp")
-        val f2 = HWPReader.fromFile("../tests/report.hwp")
-//        val bytearray = File("../tests/report_res.hwp").readBytes()
+//        val f1 = HWPReader.fromFile("../tests/report_res.hwp")
+//        val f2 = HWPReader.fromFile("../tests/report.hwp")
+
+//        val bytearray = File("../tests/report.hwp").readBytes()
 //
 //        val parsed = HWPParser().parseDocument(
 //            stream = ByteArrayInputStream(bytearray)
@@ -29,23 +30,23 @@ class HwpEditorApplicationTests {
 //        val gson = GsonBuilder().setPrettyPrinting().create()
 //        val res = (gson.toJson(parsed))
 //
-//        val f = File("../tests/report_res.json")
+//        val f = File("../tests/report.json")
 //        f.createNewFile()
 //        f.writeText(res)
 
-//        val jsonString = File("../tests/report.json").readText()
-//        // json 문자열에서 hwp 데이터 모델 생성
-//        val parsedDocument: HWPDataModel = Gson().fromJson(
-//            jsonString,
-//            HWPDataModel::class.java,
-//        )
-//        // 문서 출력스트림 생성
-//        val documentOutputStream: ByteArrayOutputStream = Writer().writeDocument(
-//            parsedDocument,
-//        )
-//        val f = File("../tests/report_res.hwp")
-//        f.createNewFile()
-//        f.writeBytes(documentOutputStream.toByteArray())
+        val jsonString = File("../tests/report.json").readText()
+        // json 문자열에서 hwp 데이터 모델 생성
+        val parsedDocument: HWPDataModel = Gson().fromJson(
+            jsonString,
+            HWPDataModel::class.java,
+        )
+        // 문서 출력스트림 생성
+        val documentOutputStream: ByteArrayOutputStream = Writer().writeDocument(
+            parsedDocument,
+        )
+        val f = File("../tests/report_res.hwp")
+        f.createNewFile()
+        f.writeBytes(documentOutputStream.toByteArray())
 
 //        val hwpFile: HWPFile = BlankFileMaker.make()
 //        hwpFile.bodyText.sectionList.last().paragraphs.last().text.addString("첫번째")
@@ -75,8 +76,8 @@ class HwpEditorApplicationTests {
 //        currentParagraph.createText()
 //        currentParagraph.text.addString("두번째")
 //        currentParagraph.createCharShape()
-//        currentParagraph.charShape.addParaCharShape(0,0)
-//        currentParagraph.charShape.addParaCharShape(2,5)
+//        currentParagraph.charShape.addParaCharShape(0,5)
+//        // currentParagraph.charShape.addParaCharShape(2,5)
 //        currentParagraph.createLineSeg()
 //        val lsi = currentParagraph.lineSeg.addNewLineSegItem()
 //        lsi.textStartPosition = 0
