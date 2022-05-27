@@ -7,11 +7,11 @@ class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
-//        println("Hello, world!")
-        val f1 = HWPReader.fromFile("../tests/text.hwp")
-        val f2 = HWPReader.fromFile("../tests/text_modified.hwp")
-
         println("Hello, world!")
+//        val f1 = HWPReader.fromFile("../tests/text.hwp")
+//        val f2 = HWPReader.fromFile("../tests/text_modified.hwp")
+//
+//        println("Hello, world!")
 
 //        val bytearray = File("../tests/report.hwp").readBytes()
 //
