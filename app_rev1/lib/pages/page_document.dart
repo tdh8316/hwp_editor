@@ -127,11 +127,10 @@ class DocumentPage extends StatelessWidget {
                   ),
                   const MenuFlyoutSeparator(),
                   MenuFlyoutItem(
-                    text: const Text("DEBUG: Open test file"),
+                    text: const Text("DEBUG: 열기(localhost)"),
                     leading: const Icon(FluentIcons.open_file),
-                    onPressed: () async => await read.loadHWPDocument(
-                      "../tests/report.json",
-                    ),
+                    onPressed: () async =>
+                        await read.loadHWPDocumentOnLocalHost(),
                   ),
                   MenuFlyoutItem(
                     text: const Text("DEBUG: 저장(localhost)"),
@@ -141,7 +140,7 @@ class DocumentPage extends StatelessWidget {
                   ),
                   MenuFlyoutItem(
                     text: const Text("DEBUG: Show json data"),
-                    leading: const Icon(FluentIcons.open_file),
+                    leading: const Icon(FluentIcons.device_bug),
                     onPressed: () => showDialog(
                       context: context,
                       builder: (_) {

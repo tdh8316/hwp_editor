@@ -1,14 +1,17 @@
 package io.github.tdh8316.hwp_editor
 
+import kr.dogfoot.hwplib.reader.HWPReader
 import org.junit.jupiter.api.Test
 
 class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
+//        println("Hello, world!")
+        val f1 = HWPReader.fromFile("../tests/text.hwp")
+        val f2 = HWPReader.fromFile("../tests/text_modified.hwp")
+
         println("Hello, world!")
-//        val f1 = HWPReader.fromFile("../tests/report_res.hwp")
-//        val f2 = HWPReader.fromFile("../tests/report.hwp")
 
 //        val bytearray = File("../tests/report.hwp").readBytes()
 //

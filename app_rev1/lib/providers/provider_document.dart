@@ -128,6 +128,37 @@ class DocumentProvider extends ChangeNotifier {
     flyoutController.close();
   }
 
+  Future<void> loadHWPDocumentOnLocalHost() async {
+    final FilePickerResult? filePickerResult =
+        await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ["json", "hwp"],
+      lockParentWindow: true,
+    );
+    if (filePickerResult == null) return;
+    final String filePath = (filePickerResult.files.single.path!);
+    String? jsonString;
+
+    if (filePath.endsWith(".json")) {
+      jsonString = File(filePath).readAsStringSync();
+    } else {
+      final bytes = File(filePath).readAsBytesSync();
+      final String encodedData = base64Encode(bytes).replaceAll("/", "_");
+      final String uri = Uri.encodeFull(
+        "http://localhost:8080/api/parse/$encodedData",
+      );
+      final http.Response response = await http.get(
+        Uri.parse(uri),
+      );
+      jsonString = response.body;
+    }
+
+    d.loadDocument(jsonDecode(jsonString));
+    _filePath = filePath;
+    notifyListeners();
+    flyoutController.close();
+  }
+
   KeyEventResult onKeyOnParagraphWidget(FocusNode node, RawKeyEvent event) {
     final bool isKeyDown = event.runtimeType == RawKeyDownEvent;
 
@@ -157,6 +188,8 @@ class DocumentProvider extends ChangeNotifier {
         final List<List<int>> newCharShapes = [
           [0, currentParagraphController.charShapes.last.last],
         ];
+        final List newLineSeg =
+            (d.getCurrentParagraph()["lineSeg"] as List).toList();
         final int newParaShapeId = currentParagraphController.paraShapeId;
         d.paragraphControllers.insert(
           newIndex,
@@ -171,6 +204,7 @@ class DocumentProvider extends ChangeNotifier {
           "charShapes": newCharShapes,
           "paraShapeId": newParaShapeId,
           "styleId": 0,
+          "lineSeg": newLineSeg,
         };
         d.getParagraphs().insert(
               newIndex,

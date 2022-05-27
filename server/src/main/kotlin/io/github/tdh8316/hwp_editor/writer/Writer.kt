@@ -34,14 +34,19 @@ class Writer {
 
     /// 문서 정보를 저장
     private fun writeDocInfo(hwpFile: HWPFile, docInfo: DocInfoDataModel) {
-//        for (faceName in docInfo.hangulFaceNameList) {
-//            val currentFaceName = hwpFile.docInfo.addNewHangulFaceName()
-//            currentFaceName.name = faceName.name
-//            currentFaceName.baseFontName = faceName.baseFontName
-//        }
+        for (faceName in docInfo.hangulFaceNameList) {
+            val currentFaceName = hwpFile.docInfo.addNewHangulFaceName()
+            currentFaceName.name = faceName.name
+            currentFaceName.baseFontName = faceName.baseFontName
+        }
 
         for (i in 0 until hwpFile.docInfo.charShapeList.count()) {
-            hwpFile.docInfo.charShapeList[i].faceNameIds.hangul = docInfo.charShapeList[i].faceNameIds[0]
+            hwpFile.docInfo.charShapeList[i].faceNameIds.array = intArrayOf(
+                docInfo.charShapeList[i].faceNameIds[0], docInfo.charShapeList[i].faceNameIds[0],
+                docInfo.charShapeList[i].faceNameIds[0], docInfo.charShapeList[i].faceNameIds[0],
+                docInfo.charShapeList[i].faceNameIds[0], docInfo.charShapeList[i].faceNameIds[0],
+                docInfo.charShapeList[i].faceNameIds[0]
+            )
             hwpFile.docInfo.charShapeList[i].baseSize = docInfo.charShapeList[i].baseSize
             hwpFile.docInfo.charShapeList[i].charColor.value = docInfo.charShapeList[i].charColor
             hwpFile.docInfo.charShapeList[i].property.isItalic = docInfo.charShapeList[i].isItalic
@@ -50,11 +55,23 @@ class Writer {
 
         for (charShape in docInfo.charShapeList.slice(hwpFile.docInfo.charShapeList.count() until docInfo.charShapeList.count())) {
             val currentCharShape = hwpFile.docInfo.addNewCharShape()
-            currentCharShape.faceNameIds.hangul = charShape.faceNameIds[0]
+            currentCharShape.faceNameIds.array = intArrayOf(
+                charShape.faceNameIds[0], charShape.faceNameIds[0],
+                charShape.faceNameIds[0], charShape.faceNameIds[0],
+                charShape.faceNameIds[0], charShape.faceNameIds[0],
+                charShape.faceNameIds[0]
+            )
             currentCharShape.baseSize = charShape.baseSize
             currentCharShape.charColor.value = charShape.charColor
             currentCharShape.property.isItalic = charShape.isItalic
             currentCharShape.property.isBold = charShape.isBold
+            currentCharShape.ratios.array = shortArrayOf(100, 100, 100, 100, 100, 100, 100)
+            currentCharShape.relativeSizes.array = shortArrayOf(100, 100, 100, 100, 100, 100, 100)
+
+            // TODO: exact value
+            currentCharShape.shadeColor.value = -1
+            currentCharShape.shadowColor.value = 11711154
+            currentCharShape.borderFillId = 2
         }
 
         for (j in 0 until hwpFile.docInfo.paraShapeList.count()) {
@@ -121,7 +138,6 @@ class Writer {
         header.lineAlignCount = 1
         header.instanceID = 0
         header.isMergedByTrack = 0
-        header.controlMask.value = 0
 
         currentParagraph.createText()
         currentParagraph.text.addString(paragraph.text)
@@ -144,5 +160,6 @@ class Writer {
             lsi.segmentWidth = lineSegItem.segmentWidth
             lsi.tag.value = lineSegItem.tagValue
         }
+        header.controlMask.value = 0
     }
 }
