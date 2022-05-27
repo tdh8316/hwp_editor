@@ -54,19 +54,28 @@ class DocumentPage extends StatelessWidget {
   }
 
   Widget _buildEditor(BuildContext context) {
+    final DocumentProvider watch = context.watch<DocumentProvider>();
+    final DocumentProvider read = context.read<DocumentProvider>();
     return Expanded(
       child: SingleChildScrollView(
         child: InteractiveViewer(
           scaleEnabled: false,
-          child: Container(
-            color: Colors.white,
-            width: 770,
-            child: MediaQuery(
-              data: MediaQueryData(
-                textScaleFactor:
-                    context.watch<DocumentProvider>().textScaleFactor,
+          child: GestureDetector(
+            onTap: () => read.d.paragraphFocusNodes[0].requestFocus(),
+            child: Container(
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(128),
+                child: SizedBox(
+                  width: 610,
+                  child: MediaQuery(
+                    data: MediaQueryData(
+                      textScaleFactor: watch.textScaleFactor,
+                    ),
+                    child: _buildSections(context),
+                  ),
+                ),
               ),
-              child: _buildSections(context),
             ),
           ),
         ),
