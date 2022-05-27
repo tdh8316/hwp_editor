@@ -1,24 +1,12 @@
 package io.github.tdh8316.hwp_editor
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import io.github.tdh8316.hwp_editor.parser.HWPParser
-import io.github.tdh8316.hwp_editor.parser.datamodel.HWPDataModel
-import io.github.tdh8316.hwp_editor.writer.Writer
-import kr.dogfoot.hwplib.`object`.HWPFile
-import kr.dogfoot.hwplib.`object`.docinfo.parashape.Alignment
-import kr.dogfoot.hwplib.reader.HWPReader
-import kr.dogfoot.hwplib.tool.blankfilemaker.BlankFileMaker
-import kr.dogfoot.hwplib.writer.HWPWriter
 import org.junit.jupiter.api.Test
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.File
 
 class HwpEditorApplicationTests {
 
     @Test
     fun contextLoads() {
+        println("Hello, world!")
 //        val f1 = HWPReader.fromFile("../tests/report_res.hwp")
 //        val f2 = HWPReader.fromFile("../tests/report.hwp")
 
@@ -34,19 +22,19 @@ class HwpEditorApplicationTests {
 //        f.createNewFile()
 //        f.writeText(res)
 
-        val jsonString = File("../tests/report.json").readText()
-        // json 문자열에서 hwp 데이터 모델 생성
-        val parsedDocument: HWPDataModel = Gson().fromJson(
-            jsonString,
-            HWPDataModel::class.java,
-        )
-        // 문서 출력스트림 생성
-        val documentOutputStream: ByteArrayOutputStream = Writer().writeDocument(
-            parsedDocument,
-        )
-        val f = File("../tests/report_res.hwp")
-        f.createNewFile()
-        f.writeBytes(documentOutputStream.toByteArray())
+//        val jsonString = File("../tests/report.json").readText()
+//        // json 문자열에서 hwp 데이터 모델 생성
+//        val parsedDocument: HWPDataModel = Gson().fromJson(
+//            jsonString,
+//            HWPDataModel::class.java,
+//        )
+//        // 문서 출력스트림 생성
+//        val documentOutputStream: ByteArrayOutputStream = Writer().writeDocument(
+//            parsedDocument,
+//        )
+//        val f = File("../tests/report_res.hwp")
+//        f.createNewFile()
+//        f.writeBytes(documentOutputStream.toByteArray())
 
 //        val hwpFile: HWPFile = BlankFileMaker.make()
 //        hwpFile.bodyText.sectionList.last().paragraphs.last().text.addString("첫번째")
