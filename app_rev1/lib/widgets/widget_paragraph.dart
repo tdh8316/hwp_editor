@@ -125,10 +125,10 @@ class ParagraphController extends TextEditingController {
   }
 
   /// 한국어가 입력 중일 때는 커서가 문자열 길이보다 한 칸 뒤임
-  int getCursor({int adjust = 0}) => selection.baseOffset - adjust;
+  int getCursorPosition({int adjust = 0}) => selection.baseOffset - adjust;
 
   int getCurrentCharShapeIndex({int adjust = 0}) {
-    final int cursorPosition = getCursor(adjust: adjust);
+    final int cursorPosition = getCursorPosition(adjust: adjust);
     int idx = 0;
     for (int i = 0; i <= charShapes.length - 1; i++) {
       if (charShapes[i][0] < cursorPosition) {

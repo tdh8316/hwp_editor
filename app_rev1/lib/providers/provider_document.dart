@@ -41,11 +41,13 @@ class DocumentProvider extends ChangeNotifier {
       d.getParagraphAt(d.lastFocusedNodeIndex)["paraShapeId"];
 
   set currentParaShapeId(int value) {
-    d.jsonData["bodyText"]["sections"][0]["paragraphs"][d.lastFocusedNodeIndex]
-        ["paraShapeId"] = value;
-    d.paragraphControllers[d.lastFocusedNodeIndex].paraShapeId = value;
+    d.getParagraphAt(d.lastFocusedNodeIndex)["paraShapeId"] = value;
+    currentParagraphController.paraShapeId = value;
     notifyListeners();
   }
+
+  ParagraphController get currentParagraphController =>
+      d.paragraphControllers[d.lastFocusedNodeIndex];
 
   final FlyoutController flyoutController = FlyoutController();
 
@@ -87,7 +89,8 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> saveHWPDocument() async {
-    print(d.jsonData);
+    // TODO: Save
+    debugPrint(d.jsonData.toString());
     notifyListeners();
   }
 
@@ -101,7 +104,7 @@ class DocumentProvider extends ChangeNotifier {
       LogicalKeyboardKey.arrowUp,
     ];
     if (shouldControlCursorKeys.contains(event.logicalKey)) {
-      onParagraphCursorChanged(d.paragraphControllers[d.lastFocusedNodeIndex]);
+      onParagraphCursorChanged(currentParagraphController);
       return KeyEventResult.ignored;
     }
 
@@ -111,18 +114,16 @@ class DocumentProvider extends ChangeNotifier {
     ];
     if (isKeyDown && shouldControlEnterKeys.contains(event.logicalKey)) {
       // Create new paragraph
-      final ParagraphController lastParagraphController =
-          d.paragraphControllers[d.lastFocusedNodeIndex];
 
       // If cursor is located at the end of paragraph
-      if (lastParagraphController.getCursor() >=
-          lastParagraphController.text.length) {
+      if (currentParagraphController.getCursorPosition() >=
+          currentParagraphController.text.length) {
         final int newIndex = d.lastFocusedNodeIndex + 1;
 
         final List<List<int>> newCharShapes = [
-          [0, lastParagraphController.charShapes.last.last]
+          [0, currentParagraphController.charShapes.last.last],
         ];
-        final int newParaShapeId = lastParagraphController.paraShapeId;
+        final int newParaShapeId = currentParagraphController.paraShapeId;
         d.paragraphControllers.insert(
           newIndex,
           ParagraphController(
@@ -157,15 +158,17 @@ class DocumentProvider extends ChangeNotifier {
     if (isKeyDown && shouldControlBackspaceKeys.contains(event.logicalKey)) {
       if (d.getParagraphs().length > 1) {
         // Remove current paragraph
-        d.paragraphControllers.removeAt(d.lastFocusedNodeIndex);
-        d.paragraphFocusNodes.removeAt(d.lastFocusedNodeIndex);
-        d.getParagraphs().removeAt(d.lastFocusedNodeIndex);
-        d.lastFocusedNodeIndex -= 1;
+        if (currentParagraphController.getCursorPosition() == 0) {
+          d.paragraphControllers.removeAt(d.lastFocusedNodeIndex);
+          d.paragraphFocusNodes.removeAt(d.lastFocusedNodeIndex);
+          d.getParagraphs().removeAt(d.lastFocusedNodeIndex);
+          d.lastFocusedNodeIndex -= 1;
 
-        refocusOnTheLastFocusedWidget();
-        notifyListeners();
+          refocusOnTheLastFocusedWidget();
+          notifyListeners();
 
-        return KeyEventResult.handled;
+          return KeyEventResult.handled;
+        }
       }
     }
 
@@ -230,7 +233,7 @@ class DocumentProvider extends ChangeNotifier {
 
       // 텍스트가 추가됐을 때
       if (text.length > prevText.length) {
-        final int lastCursorIndex = controller.getCursor(
+        final int lastCursorIndex = controller.getCursorPosition(
           adjust: 1,
         );
         final int lastCharShapeIndex = controller.getCurrentCharShapeIndex(

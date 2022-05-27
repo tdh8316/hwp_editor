@@ -96,7 +96,7 @@ class HWPDocumentModel {
         final List faceNameMaps =
             (jsonData["docInfo"]["hangulFaceNameList"] as List);
         faceNameMaps.add(
-          {"name": textStyle.fontFamily, "baseFontName": ""},
+          {"name": textStyle.fontFamily!, "baseFontName": getFontBaseName(textStyle.fontFamily!)},
         );
         faceNameIndex = faceNameMaps.length - 1;
       } else {
@@ -139,4 +139,15 @@ TextAlign getTextAlign(int value) {
     default:
       return TextAlign.left;
   }
+}
+
+String getFontBaseName(String fn) {
+  return {
+    "맑은 고딕": "MalgunGothic",
+    "함초롬바탕": "HCR Batang",
+    "궁서체": "",
+  }[fn]!;
+}
+List<String> getAvailableFontList() {
+  return ["맑은 고딕", "함초롬바탕", "궁서체"];
 }

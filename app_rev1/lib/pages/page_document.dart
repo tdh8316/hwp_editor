@@ -1,19 +1,27 @@
+import 'dart:convert';
+
+import 'package:app_rev1/models/model_document.dart';
 import 'package:app_rev1/providers/provider_document.dart';
 import 'package:app_rev1/widgets/widget_paragraph.dart';
 import 'package:fluent_ui/fluent_ui.dart'
     show
+        Button,
         CommandBar,
         CommandBarBuilderItem,
-        Flyout,
-        FlyoutOpenMode,
-        MenuFlyoutItem,
-        MenuFlyout,
-        FluentIcons,
         CommandBarButton,
         CommandBarSeparator,
+        ContentDialog,
+        DropDownButton,
+        FluentIcons,
+        Flyout,
+        FlyoutOpenMode,
+        MenuFlyout,
+        MenuFlyoutItem,
+        MenuFlyoutSeparator,
+        TextBox,
         ToggleButton,
-        DropDownButton;
-import 'package:flutter/material.dart';
+        showDialog;
+import 'package:flutter/material.dart' hide showDialog;
 import 'package:provider/provider.dart';
 
 class DocumentPage extends StatelessWidget {
@@ -104,16 +112,45 @@ class DocumentPage extends StatelessWidget {
                     onPressed: () async => await read.openHWPDocument(),
                   ),
                   MenuFlyoutItem(
-                    text: const Text("Open test file..."),
+                    text: const Text("저장"),
+                    leading: const Icon(FluentIcons.save),
+                    onPressed: () async => await read.saveHWPDocument(),
+                  ),
+                  const MenuFlyoutSeparator(),
+                  MenuFlyoutItem(
+                    text: const Text("DEBUG: Open test file"),
                     leading: const Icon(FluentIcons.open_file),
                     onPressed: () async => await read.loadHWPDocument(
                       "../tests/report.json",
                     ),
                   ),
                   MenuFlyoutItem(
-                    text: const Text("저장"),
-                    leading: const Icon(FluentIcons.save),
-                    onPressed: () async => await read.saveHWPDocument(),
+                    text: const Text("DEBUG: Show json data"),
+                    leading: const Icon(FluentIcons.open_file),
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (_) {
+                        return ContentDialog(
+                          content: TextBox(
+                            maxLines: null,
+                            expands: true,
+                            readOnly: true,
+                            controller: TextEditingController(
+                              text: const JsonEncoder.withIndent("  ").convert(
+                                read.d.jsonData,
+                              ),
+                            ),
+                          ),
+                          actions: [
+                            Button(
+                                child: const Text('Ok'),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                })
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ],
               );
@@ -158,8 +195,7 @@ class DocumentPage extends StatelessWidget {
           child: DropDownButton(
             title: Text(watch.currentTextStyle.fontFamily.toString()),
             items: [
-              // TODO: More fonts
-              for (String fontName in ["함초롬바탕"])
+              for (String fontName in getAvailableFontList())
                 MenuFlyoutItem(
                   text: Text(fontName),
                   onPressed: () {
@@ -352,7 +388,7 @@ class DocumentPage extends StatelessWidget {
   }
 
   Widget _buildBottomSheet(BuildContext context) {
-    // final DocumentProvider read = context.read<DocumentProvider>();
+    final DocumentProvider read = context.read<DocumentProvider>();
     final DocumentProvider watch = context.watch<DocumentProvider>();
     return Row(
       children: [
@@ -362,7 +398,8 @@ class DocumentPage extends StatelessWidget {
           child: VerticalDivider(),
         ),
         Text(
-          "${watch.d.lastFocusedNodeIndex + 1}문단",
+          "${watch.d.lastFocusedNodeIndex + 1}:"
+          "${read.currentParagraphController.getCursorPosition()}",
         ),
       ],
     );
