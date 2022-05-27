@@ -55,6 +55,10 @@ class HWPDocumentModel {
     return getParagraphs()[index];
   }
 
+  Map<String, dynamic> getCurrentParagraph() => getParagraphAt(
+        lastFocusedNodeIndex,
+      );
+
   List<TextStyle> getCharShapes() {
     List<TextStyle> list = [];
     for (int i = 0;
@@ -96,7 +100,10 @@ class HWPDocumentModel {
         final List faceNameMaps =
             (jsonData["docInfo"]["hangulFaceNameList"] as List);
         faceNameMaps.add(
-          {"name": textStyle.fontFamily!, "baseFontName": getFontBaseName(textStyle.fontFamily!)},
+          {
+            "name": textStyle.fontFamily!,
+            "baseFontName": getFontBaseName(textStyle.fontFamily!)
+          },
         );
         faceNameIndex = faceNameMaps.length - 1;
       } else {
@@ -148,6 +155,7 @@ String getFontBaseName(String fn) {
     "궁서체": "",
   }[fn]!;
 }
+
 List<String> getAvailableFontList() {
   return ["맑은 고딕", "함초롬바탕", "궁서체"];
 }
