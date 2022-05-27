@@ -7,6 +7,7 @@ import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart' show FlyoutController;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class DocumentProvider extends ChangeNotifier {
   String _filePath = "unknown";
@@ -33,6 +34,16 @@ class DocumentProvider extends ChangeNotifier {
 
   set currentTextStyle(TextStyle style) {
     _currentTextStyle = style;
+    notifyListeners();
+  }
+
+  int get currentParaShapeId =>
+      d.getParagraphAt(d.lastFocusedNodeIndex)["paraShapeId"];
+
+  set currentParaShapeId(int value) {
+    d.jsonData["bodyText"]["sections"][0]["paragraphs"][d.lastFocusedNodeIndex]
+        ["paraShapeId"] = value;
+    d.paragraphControllers[d.lastFocusedNodeIndex].paraShapeId = value;
     notifyListeners();
   }
 
@@ -80,12 +91,95 @@ class DocumentProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  KeyEventResult onKeyOnParagraphWidget(FocusNode node, RawKeyEvent event) {
+    final bool isKeyDown = event.runtimeType == RawKeyDownEvent;
+
+    final List<LogicalKeyboardKey> shouldControlCursorKeys = [
+      LogicalKeyboardKey.arrowLeft,
+      LogicalKeyboardKey.arrowRight,
+      LogicalKeyboardKey.arrowDown,
+      LogicalKeyboardKey.arrowUp,
+    ];
+    if (shouldControlCursorKeys.contains(event.logicalKey)) {
+      onParagraphCursorChanged(d.paragraphControllers[d.lastFocusedNodeIndex]);
+      return KeyEventResult.ignored;
+    }
+
+    final List<LogicalKeyboardKey> shouldControlEnterKeys = [
+      LogicalKeyboardKey.enter,
+      LogicalKeyboardKey.numpadEnter,
+    ];
+    if (isKeyDown && shouldControlEnterKeys.contains(event.logicalKey)) {
+      // Create new paragraph
+      final ParagraphController lastParagraphController =
+          d.paragraphControllers[d.lastFocusedNodeIndex];
+
+      // If cursor is located at the end of paragraph
+      if (lastParagraphController.getCursor() >=
+          lastParagraphController.text.length) {
+        final int newIndex = d.lastFocusedNodeIndex + 1;
+
+        final List<List<int>> newCharShapes = [
+          [0, lastParagraphController.charShapes.last.last]
+        ];
+        final int newParaShapeId = lastParagraphController.paraShapeId;
+        d.paragraphControllers.insert(
+          newIndex,
+          ParagraphController(
+            charShapes: newCharShapes,
+            paraShapeId: newParaShapeId,
+          ),
+        );
+        d.paragraphFocusNodes.insert(newIndex, FocusNode());
+        final Map<String, Object> newParagraphJsonData = {
+          "text": "",
+          "charShapes": newCharShapes,
+          "paraShapeId": newParaShapeId,
+          "styleId": 0,
+        };
+        d.getParagraphs().insert(
+              newIndex,
+              newParagraphJsonData,
+            );
+        d.lastFocusedNodeIndex = newIndex;
+      }
+
+      // print(d.getParagraphs());
+      refocusOnTheLastFocusedWidget();
+      notifyListeners();
+
+      return KeyEventResult.handled;
+    }
+
+    final List<LogicalKeyboardKey> shouldControlBackspaceKeys = [
+      LogicalKeyboardKey.backspace,
+    ];
+    if (isKeyDown && shouldControlBackspaceKeys.contains(event.logicalKey)) {
+      if (d.getParagraphs().length > 1) {
+        // Remove current paragraph
+        d.paragraphControllers.removeAt(d.lastFocusedNodeIndex);
+        d.paragraphFocusNodes.removeAt(d.lastFocusedNodeIndex);
+        d.getParagraphs().removeAt(d.lastFocusedNodeIndex);
+        d.lastFocusedNodeIndex -= 1;
+
+        refocusOnTheLastFocusedWidget();
+        notifyListeners();
+
+        return KeyEventResult.handled;
+      }
+    }
+
+    return KeyEventResult.ignored;
+  }
+
   void onParagraphCursorChanged(ParagraphController controller) {
     currentTextStyle = d.getTextStyleFromCharShape(
       controller.charShapes[controller.getCurrentCharShapeIndex()][1],
     );
 
     d.lastFocusedNodeIndex = d.paragraphControllers.indexOf(controller);
+
+    currentParaShapeId = controller.paraShapeId;
 
     notifyListeners();
   }

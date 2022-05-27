@@ -24,53 +24,49 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
 
   @override
   Widget build(BuildContext context) {
-    paragraphController = context
-        .read<DocumentProvider>()
-        .d
-        .paragraphControllers[widget.paragraphIndex];
+    final DocumentProvider read = context.read<DocumentProvider>();
+    final DocumentProvider watch = context.watch<DocumentProvider>();
+    paragraphController = read.d.paragraphControllers[widget.paragraphIndex];
     _prevText = paragraphController.text;
-    final Map paraShape = context
-        .read<DocumentProvider>()
-        .d
-        .getParaShapeAt(paragraphController.paraShapeId);
-    return TextField(
-      focusNode: context
-          .watch<DocumentProvider>()
-          .d
-          .paragraphFocusNodes[widget.paragraphIndex],
-      controller: paragraphController,
-      decoration: const InputDecoration(
-        hintText: null,
-        fillColor: Colors.white,
-        filled: true,
-        isDense: true,
-        border: InputBorder.none,
-        contentPadding: EdgeInsets.only(bottom: 6),
+    final Map paraShape =
+        read.d.getParaShapeAt(paragraphController.paraShapeId);
+    return IntrinsicHeight(
+      child: TextField(
+        focusNode: watch.d.paragraphFocusNodes[widget.paragraphIndex]
+        ..onKey =read.onKeyOnParagraphWidget,
+        controller: paragraphController,
+        decoration: const InputDecoration(
+          hintText: null,
+          fillColor: Colors.white,
+          filled: true,
+          isDense: true,
+          border: InputBorder.none,
+          contentPadding: EdgeInsets.only(bottom: 6),
+        ),
+        style: watch.currentTextStyle,
+        strutStyle: StrutStyle(
+          height: paraShape["lineSpace"] / 100.0,
+        ),
+        selectionHeightStyle: BoxHeightStyle.max,
+        textAlign: getTextAlign(paraShape["alignment"]),
+        maxLines: null,
+        expands: true,
+        cursorColor: Colors.black,
+        // TODO: Keyboard arrow detector
+        onTap: () => read.onParagraphCursorChanged(paragraphController),
+        onChanged: (String text) {
+          read.onParagraphTextChanged(
+            text: text,
+            prevText: _prevText,
+            controller: paragraphController,
+            paragraph: read.d.getParagraphAt(
+              widget.paragraphIndex,
+            ),
+          );
+          _prevText = text;
+        },
+        textDirection: TextDirection.ltr,
       ),
-      style: context.watch<DocumentProvider>().currentTextStyle,
-      strutStyle: StrutStyle(
-        height: paraShape["lineSpace"] / 100.0,
-      ),
-      selectionHeightStyle: BoxHeightStyle.max,
-      textAlign: getTextAlign(paraShape["alignment"]),
-      maxLines: null,
-      cursorColor: Colors.black,
-      // TODO: Keyboard arrow detector
-      onTap: () => context
-          .read<DocumentProvider>()
-          .onParagraphCursorChanged(paragraphController),
-      onChanged: (String text) {
-        context.read<DocumentProvider>().onParagraphTextChanged(
-              text: text,
-              prevText: _prevText,
-              controller: paragraphController,
-              paragraph: context.read<DocumentProvider>().d.getParagraphAt(
-                    widget.paragraphIndex,
-                  ),
-            );
-        _prevText = text;
-      },
-      textDirection: TextDirection.ltr,
     );
   }
 }

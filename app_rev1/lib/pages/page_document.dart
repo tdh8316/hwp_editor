@@ -38,18 +38,7 @@ class DocumentPage extends StatelessWidget {
                 _buildEditor(context),
               ],
             ),
-            bottomSheet: Row(
-              children: [
-                Text(context.watch<DocumentProvider>().filePath),
-                const SizedBox(
-                  height: 16,
-                  child: VerticalDivider(),
-                ),
-                Text(
-                  context.watch<DocumentProvider>().currentTextStyle.toString(),
-                ),
-              ],
-            ),
+            bottomSheet: _buildBottomSheet(context),
           );
         },
       ),
@@ -87,8 +76,12 @@ class DocumentPage extends StatelessWidget {
       primary: false,
       itemCount: context.read<DocumentProvider>().d.getParagraphs().length,
       itemBuilder: (BuildContext context, int paragraphIndex) {
-        return ParagraphWidget(
-          paragraphIndex: paragraphIndex,
+        return Padding(
+          // TODO: Exact line padding
+          padding: const EdgeInsets.only(bottom: 8),
+          child: ParagraphWidget(
+            paragraphIndex: paragraphIndex,
+          ),
         );
       },
     );
@@ -259,6 +252,84 @@ class DocumentPage extends StatelessWidget {
             ),
           ),
         ),
+        const SizedBox(width: 8),
+        SizedBox(
+          height: 28,
+          child: Tooltip(
+            message: "왼쪽 정렬",
+            child: ToggleButton(
+              checked: [0, 1].contains(
+                read.d.getParaShapeAt(watch.currentParaShapeId)["alignment"],
+              ),
+              onChanged: (bool checked) {
+                // Deep copy
+                Map<String, int> origin = Map<String, int>.from(
+                  read.d.getParaShapeAt(
+                    read.currentParaShapeId,
+                  ),
+                );
+                origin["alignment"] = 0;
+                read.currentParaShapeId = read.d.getParaShapeReferenceValue(
+                  origin,
+                );
+                read.refocusOnTheLastFocusedWidget();
+              },
+              child: const Icon(FluentIcons.align_left),
+            ),
+          ),
+        ),
+        const SizedBox(width: 2),
+        SizedBox(
+          height: 28,
+          child: Tooltip(
+            message: "가운데 정렬",
+            child: ToggleButton(
+              checked: [3].contains(
+                read.d.getParaShapeAt(watch.currentParaShapeId)["alignment"],
+              ),
+              onChanged: (bool checked) {
+                // Deep copy
+                Map<String, int> origin = Map<String, int>.from(
+                  read.d.getParaShapeAt(
+                    read.currentParaShapeId,
+                  ),
+                );
+                origin["alignment"] = 3;
+                read.currentParaShapeId = read.d.getParaShapeReferenceValue(
+                  origin,
+                );
+                read.refocusOnTheLastFocusedWidget();
+              },
+              child: const Icon(FluentIcons.align_center),
+            ),
+          ),
+        ),
+        const SizedBox(width: 2),
+        SizedBox(
+          height: 28,
+          child: Tooltip(
+            message: "오른쪽 정렬",
+            child: ToggleButton(
+              checked: [2].contains(
+                read.d.getParaShapeAt(watch.currentParaShapeId)["alignment"],
+              ),
+              onChanged: (bool checked) {
+                // Deep copy
+                Map<String, int> origin = Map<String, int>.from(
+                  read.d.getParaShapeAt(
+                    read.currentParaShapeId,
+                  ),
+                );
+                origin["alignment"] = 2;
+                read.currentParaShapeId = read.d.getParaShapeReferenceValue(
+                  origin,
+                );
+                read.refocusOnTheLastFocusedWidget();
+              },
+              child: const Icon(FluentIcons.align_right),
+            ),
+          ),
+        ),
         const SizedBox(width: 2),
       ],
     );
@@ -276,6 +347,23 @@ class DocumentPage extends StatelessWidget {
     return Row(
       children: const [
         Text("서식"),
+      ],
+    );
+  }
+
+  Widget _buildBottomSheet(BuildContext context) {
+    // final DocumentProvider read = context.read<DocumentProvider>();
+    final DocumentProvider watch = context.watch<DocumentProvider>();
+    return Row(
+      children: [
+        Text(watch.filePath),
+        const SizedBox(
+          height: 16,
+          child: VerticalDivider(),
+        ),
+        Text(
+          "${watch.d.lastFocusedNodeIndex + 1}문단",
+        ),
       ],
     );
   }

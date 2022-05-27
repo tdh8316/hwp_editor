@@ -1,5 +1,6 @@
 import 'package:app_rev1/models/model_empty.dart';
 import 'package:app_rev1/widgets/widget_paragraph.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class HWPDocumentModel {
@@ -38,8 +39,12 @@ class HWPDocumentModel {
   final List<FocusNode> paragraphFocusNodes = [FocusNode()];
   int lastFocusedNodeIndex = 0;
 
+  List getParaShapeList() {
+    return jsonData["docInfo"]["paraShapeList"];
+  }
+
   Map<String, dynamic> getParaShapeAt(int paraShapeId) {
-    return jsonData["docInfo"]["paraShapeList"][paraShapeId];
+    return getParaShapeList()[paraShapeId];
   }
 
   List getParagraphs() {
@@ -111,6 +116,14 @@ class HWPDocumentModel {
 
       return charShapeList.length - 1;
     }
+  }
+
+  int getParaShapeReferenceValue(Map data) {
+    final List paraShapeList = getParaShapeList();
+    if (!paraShapeList.any((element) => mapEquals(element, data))) {
+      paraShapeList.add(data);
+    }
+    return paraShapeList.indexWhere((element) => mapEquals(element, data));
   }
 }
 
