@@ -134,6 +134,12 @@ class DocumentPage extends StatelessWidget {
                     ),
                   ),
                   MenuFlyoutItem(
+                    text: const Text("DEBUG: 저장(localhost)"),
+                    leading: const Icon(FluentIcons.save),
+                    onPressed: () async =>
+                        await read.saveHWPDocumentOnLocalHost(),
+                  ),
+                  MenuFlyoutItem(
                     text: const Text("DEBUG: Show json data"),
                     leading: const Icon(FluentIcons.open_file),
                     onPressed: () => showDialog(
@@ -152,10 +158,11 @@ class DocumentPage extends StatelessWidget {
                           ),
                           actions: [
                             Button(
-                                child: const Text('Ok'),
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                })
+                              child: const Text('Ok'),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            )
                           ],
                         );
                       },

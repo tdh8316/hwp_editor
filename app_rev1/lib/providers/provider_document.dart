@@ -2,12 +2,14 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:app_rev1/models/model_document.dart';
+import 'package:app_rev1/models/model_server.dart';
 import 'package:app_rev1/widgets/widget_paragraph.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart' show FlyoutController;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 
 class DocumentProvider extends ChangeNotifier {
   String _filePath = "unknown";
@@ -66,6 +68,8 @@ class DocumentProvider extends ChangeNotifier {
   Future<void> openHWPDocument() async {
     final FilePickerResult? filePickerResult =
         await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ["json", "hwp"],
       lockParentWindow: true,
     );
     if (filePickerResult == null) return;
@@ -77,11 +81,16 @@ class DocumentProvider extends ChangeNotifier {
 
     if (filePath.endsWith(".json")) {
       jsonString = File(filePath).readAsStringSync();
+    } else {
+      final bytes = File(filePath).readAsBytesSync();
+      final String encodedData = base64Encode(bytes).replaceAll("/", "_");
+      final String uri = Uri.encodeFull("${awsDomain}api/parse/$encodedData");
+      final http.Response response = await http.get(
+        Uri.parse(uri),
+      );
+      jsonString = response.body;
     }
 
-    if (jsonString == null) {
-      return;
-    }
     d.loadDocument(jsonDecode(jsonString));
     _filePath = filePath;
     notifyListeners();
@@ -89,9 +98,34 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> saveHWPDocument() async {
-    // TODO: Save
-    debugPrint(d.jsonData.toString());
-    notifyListeners();
+    final String encodedData = base64Encode(
+      utf8.encode(jsonEncode(d.jsonData)),
+    ).replaceAll("/", "_");
+    final String uri = Uri.encodeFull("${awsDomain}api/write/$encodedData");
+    final http.Response response = await http.get(
+      Uri.parse(uri),
+    );
+    final List<int> bytes = response.bodyBytes;
+    File(
+      "${filePath.substring(0, filePath.length - 4)}_modified.hwp",
+    ).writeAsBytesSync(bytes);
+    flyoutController.close();
+  }
+
+  Future<void> saveHWPDocumentOnLocalHost() async {
+    final String encodedData = base64Encode(
+      utf8.encode(jsonEncode(d.jsonData)),
+    ).replaceAll("/", "_");
+    final String uri =
+        Uri.encodeFull("http://localhost:8080/api/write/$encodedData");
+    final http.Response response = await http.get(
+      Uri.parse(uri),
+    );
+    final List<int> bytes = response.bodyBytes;
+    File(
+      "${filePath.substring(0, filePath.length - 4)}_modified.hwp",
+    ).writeAsBytesSync(bytes);
+    flyoutController.close();
   }
 
   KeyEventResult onKeyOnParagraphWidget(FocusNode node, RawKeyEvent event) {
