@@ -11,7 +11,7 @@ class HWPEditorApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FluentApp(
+    return const FluentApp(
       home: DocumentPage(),
     );
   }

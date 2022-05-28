@@ -39,6 +39,39 @@ class HWPDocumentModel {
   final List<FocusNode> paragraphFocusNodes = [FocusNode()];
   int lastFocusedNodeIndex = 0;
 
+  void insertParagraphAtNext() {
+    final ParagraphController currentParagraphController =
+        paragraphControllers[lastFocusedNodeIndex];
+    final int newIndex = lastFocusedNodeIndex + 1;
+
+    final List<List<int>> newCharShapes = [
+      [0, currentParagraphController.charShapes.last.last],
+    ];
+
+    // TODO: Create its own LineSeg
+    final List newLineSeg = (getCurrentParagraph()["lineSeg"] as List).toList();
+    final int newParaShapeId = currentParagraphController.paraShapeId;
+    paragraphControllers.insert(
+      newIndex,
+      ParagraphController(
+        charShapes: newCharShapes,
+        paraShapeId: newParaShapeId,
+      ),
+    );
+    paragraphFocusNodes.insert(newIndex, FocusNode());
+    final Map<String, Object> newParagraphJsonData = {
+      "text": "",
+      "charShapes": newCharShapes,
+      "paraShapeId": newParaShapeId,
+      "styleId": 0,
+      "lineSeg": newLineSeg,
+    };
+    getParagraphs().insert(
+      newIndex,
+      newParagraphJsonData,
+    );
+  }
+
   List getParaShapeList() {
     return jsonData["docInfo"]["paraShapeList"];
   }
@@ -152,10 +185,10 @@ String getFontBaseName(String fn) {
   return {
     "맑은 고딕": "MalgunGothic",
     "함초롬바탕": "HCR Batang",
-    "궁서체": "",
+    "궁서": "Gungsuh",
   }[fn]!;
 }
 
 List<String> getAvailableFontList() {
-  return ["맑은 고딕", "함초롬바탕", "궁서체"];
+  return ["맑은 고딕", "함초롬바탕", "궁서"];
 }

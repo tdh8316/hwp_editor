@@ -12,7 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
 class DocumentProvider extends ChangeNotifier {
-  String _filePath = "unknown";
+  String _filePath = "./New_Document.hwp";
 
   String get filePath => _filePath;
   final HWPDocumentModel d = HWPDocumentModel();
@@ -97,37 +97,6 @@ class DocumentProvider extends ChangeNotifier {
     flyoutController.close();
   }
 
-  Future<void> saveHWPDocument() async {
-    final String encodedData = base64UrlEncode(
-      utf8.encode(jsonEncode(d.jsonData)),
-    );
-    final String uri = Uri.encodeFull("${awsDomain}api/write/$encodedData");
-    final http.Response response = await http.get(
-      Uri.parse(uri),
-    );
-    final List<int> bytes = response.bodyBytes;
-    File(
-      "${filePath.substring(0, filePath.length - 4)}_modified.hwp",
-    ).writeAsBytesSync(bytes);
-    flyoutController.close();
-  }
-
-  Future<void> saveHWPDocumentOnLocalHost() async {
-    final String encodedData = base64UrlEncode(
-      utf8.encode(jsonEncode(d.jsonData)),
-    );
-    final String uri =
-        Uri.encodeFull("http://localhost:8080/api/write/$encodedData");
-    final http.Response response = await http.get(
-      Uri.parse(uri),
-    );
-    final List<int> bytes = response.bodyBytes;
-    File(
-      "${filePath.substring(0, filePath.length - 4)}_modified.hwp",
-    ).writeAsBytesSync(bytes);
-    flyoutController.close();
-  }
-
   Future<void> loadHWPDocumentOnLocalHost() async {
     final FilePickerResult? filePickerResult =
         await FilePicker.platform.pickFiles(
@@ -159,9 +128,41 @@ class DocumentProvider extends ChangeNotifier {
     flyoutController.close();
   }
 
+  Future<void> saveHWPDocument() async {
+    final String encodedData = base64UrlEncode(
+      utf8.encode(jsonEncode(d.jsonData)),
+    );
+    final String uri = Uri.encodeFull("${awsDomain}api/write/$encodedData");
+    final http.Response response = await http.get(
+      Uri.parse(uri),
+    );
+    final List<int> bytes = response.bodyBytes;
+    File(
+      "${filePath.substring(0, filePath.length - 4)}_modified.hwp",
+    ).writeAsBytesSync(bytes);
+    flyoutController.close();
+  }
+
+  Future<void> saveHWPDocumentOnLocalHost() async {
+    final String encodedData = base64UrlEncode(
+      utf8.encode(jsonEncode(d.jsonData)),
+    );
+    final String uri =
+        Uri.encodeFull("http://localhost:8080/api/write/$encodedData");
+    final http.Response response = await http.get(
+      Uri.parse(uri),
+    );
+    final List<int> bytes = response.bodyBytes;
+    File(
+      "${filePath.substring(0, filePath.length - 4)}_modified.hwp",
+    ).writeAsBytesSync(bytes);
+    flyoutController.close();
+  }
+
   KeyEventResult onKeyOnParagraphWidget(FocusNode node, RawKeyEvent event) {
     final bool isKeyDown = event.runtimeType == RawKeyDownEvent;
 
+    // Arrow key pressed
     final List<LogicalKeyboardKey> shouldControlCursorKeys = [
       LogicalKeyboardKey.arrowLeft,
       LogicalKeyboardKey.arrowRight,
@@ -173,70 +174,41 @@ class DocumentProvider extends ChangeNotifier {
       return KeyEventResult.ignored;
     }
 
+    // Return key pressed
     final List<LogicalKeyboardKey> shouldControlEnterKeys = [
       LogicalKeyboardKey.enter,
       LogicalKeyboardKey.numpadEnter,
     ];
     if (isKeyDown && shouldControlEnterKeys.contains(event.logicalKey)) {
       // Create new paragraph
-
       // If cursor is located at the end of paragraph
       if (currentParagraphController.getCursorPosition() >=
           currentParagraphController.text.length) {
-        final int newIndex = d.lastFocusedNodeIndex + 1;
-
-        final List<List<int>> newCharShapes = [
-          [0, currentParagraphController.charShapes.last.last],
-        ];
-        final List newLineSeg =
-            (d.getCurrentParagraph()["lineSeg"] as List).toList();
-        final int newParaShapeId = currentParagraphController.paraShapeId;
-        d.paragraphControllers.insert(
-          newIndex,
-          ParagraphController(
-            charShapes: newCharShapes,
-            paraShapeId: newParaShapeId,
-          ),
-        );
-        d.paragraphFocusNodes.insert(newIndex, FocusNode());
-        final Map<String, Object> newParagraphJsonData = {
-          "text": "",
-          "charShapes": newCharShapes,
-          "paraShapeId": newParaShapeId,
-          "styleId": 0,
-          "lineSeg": newLineSeg,
-        };
-        d.getParagraphs().insert(
-              newIndex,
-              newParagraphJsonData,
-            );
-        d.lastFocusedNodeIndex = newIndex;
+        d.insertParagraphAtNext();
+        d.lastFocusedNodeIndex += 1;
       }
-
-      // print(d.getParagraphs());
       refocusOnTheLastFocusedWidget();
       notifyListeners();
-
       return KeyEventResult.handled;
     }
 
+    // Backspace key pressed
     final List<LogicalKeyboardKey> shouldControlBackspaceKeys = [
       LogicalKeyboardKey.backspace,
     ];
     if (isKeyDown && shouldControlBackspaceKeys.contains(event.logicalKey)) {
-      if (d.getParagraphs().length > 1) {
-        // Remove current paragraph
-        if (currentParagraphController.getCursorPosition() == 0) {
-          d.paragraphControllers.removeAt(d.lastFocusedNodeIndex);
-          d.paragraphFocusNodes.removeAt(d.lastFocusedNodeIndex);
-          d.getParagraphs().removeAt(d.lastFocusedNodeIndex);
-          d.lastFocusedNodeIndex -= 1;
+      // Remove current paragraph if cursor is on zero point
+      if (d.getParagraphs().length > 1 &&
+          currentParagraphController.getCursorPosition() == 0) {
+        d.paragraphControllers.removeAt(d.lastFocusedNodeIndex);
+        d.paragraphFocusNodes.removeAt(d.lastFocusedNodeIndex);
+        d.getParagraphs().removeAt(d.lastFocusedNodeIndex);
+        d.lastFocusedNodeIndex -= 1;
 
-          refocusOnTheLastFocusedWidget();
-          notifyListeners();
+        refocusOnTheLastFocusedWidget();
+        notifyListeners();
 
-          return KeyEventResult.handled;
-        }
+        return KeyEventResult.handled;
       }
     }
 

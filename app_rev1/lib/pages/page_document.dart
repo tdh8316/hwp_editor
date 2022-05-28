@@ -161,7 +161,7 @@ class DocumentPage extends StatelessWidget {
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                            )
+                            ),
                           ],
                         );
                       },
