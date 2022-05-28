@@ -34,7 +34,11 @@ class Writer {
 
     /// 문서 정보를 저장
     private fun writeDocInfo(hwpFile: HWPFile, docInfo: DocInfoDataModel) {
-        for (faceName in docInfo.hangulFaceNameList) {
+        for (k in 0 until hwpFile.docInfo.hangulFaceNameList.count()) {
+            hwpFile.docInfo.hangulFaceNameList[k].name = docInfo.hangulFaceNameList[k].name
+            hwpFile.docInfo.hangulFaceNameList[k].baseFontName = docInfo.hangulFaceNameList[k].baseFontName
+        }
+        for (faceName in docInfo.hangulFaceNameList.slice(hwpFile.docInfo.hangulFaceNameList.count() until docInfo.hangulFaceNameList.count())) {
             val currentFaceName = hwpFile.docInfo.addNewHangulFaceName()
             currentFaceName.name = faceName.name
             currentFaceName.baseFontName = faceName.baseFontName
@@ -141,7 +145,7 @@ class Writer {
 
         currentParagraph.createText()
         currentParagraph.text.addString(paragraph.text)
-        println(paragraph.text)
+        // println(paragraph.text)
 
         currentParagraph.createCharShape()
         for (charShapePair in paragraph.charShapes) {
