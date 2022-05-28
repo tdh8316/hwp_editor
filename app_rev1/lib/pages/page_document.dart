@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:app_rev1/models/model_document.dart';
 import 'package:app_rev1/providers/provider_document.dart';
@@ -37,11 +38,14 @@ class DocumentPage extends StatelessWidget {
             body: Column(
               children: [
                 _buildCommandBar(context),
-                [
-                  _buildEditPanel(context),
-                  _buildInsertPanel(context),
-                  _buildFormatPanel(context),
-                ][context.watch<DocumentProvider>().panelIndex],
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: [
+                    _buildEditPanel(context),
+                    _buildInsertPanel(context),
+                    _buildFormatPanel(context),
+                  ][context.watch<DocumentProvider>().panelIndex],
+                ),
                 const SizedBox(height: 8),
                 _buildEditor(context),
               ],
@@ -65,7 +69,7 @@ class DocumentPage extends StatelessWidget {
             child: Container(
               color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.all(128),
+                padding: EdgeInsets.all(Platform.isAndroid ? 8 : 128),
                 child: SizedBox(
                   width: 610,
                   child: MediaQuery(
@@ -406,18 +410,21 @@ class DocumentPage extends StatelessWidget {
   Widget _buildBottomSheet(BuildContext context) {
     final DocumentProvider read = context.read<DocumentProvider>();
     final DocumentProvider watch = context.watch<DocumentProvider>();
-    return Row(
-      children: [
-        Text(watch.filePath),
-        const SizedBox(
-          height: 16,
-          child: VerticalDivider(),
-        ),
-        Text(
-          "${watch.d.lastFocusedNodeIndex + 1}:"
-          "${read.currentParagraphController.getCursorPosition()}",
-        ),
-      ],
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: [
+          Text(watch.filePath),
+          const SizedBox(
+            height: 16,
+            child: VerticalDivider(),
+          ),
+          Text(
+            "${watch.d.lastFocusedNodeIndex + 1}:"
+            "${read.currentParagraphController.getCursorPosition()}",
+          ),
+        ],
+      ),
     );
   }
 }
