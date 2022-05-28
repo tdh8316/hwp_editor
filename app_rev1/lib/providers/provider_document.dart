@@ -83,7 +83,7 @@ class DocumentProvider extends ChangeNotifier {
       jsonString = File(filePath).readAsStringSync();
     } else {
       final bytes = File(filePath).readAsBytesSync();
-      final String encodedData = base64Encode(bytes).replaceAll("/", "_");
+      final String encodedData = base64UrlEncode(bytes);
       final String uri = Uri.encodeFull("${awsDomain}api/parse/$encodedData");
       final http.Response response = await http.get(
         Uri.parse(uri),
@@ -98,9 +98,9 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> saveHWPDocument() async {
-    final String encodedData = base64Encode(
+    final String encodedData = base64UrlEncode(
       utf8.encode(jsonEncode(d.jsonData)),
-    ).replaceAll("/", "_");
+    );
     final String uri = Uri.encodeFull("${awsDomain}api/write/$encodedData");
     final http.Response response = await http.get(
       Uri.parse(uri),
@@ -113,9 +113,9 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> saveHWPDocumentOnLocalHost() async {
-    final String encodedData = base64Encode(
+    final String encodedData = base64UrlEncode(
       utf8.encode(jsonEncode(d.jsonData)),
-    ).replaceAll("/", "_");
+    );
     final String uri =
         Uri.encodeFull("http://localhost:8080/api/write/$encodedData");
     final http.Response response = await http.get(
@@ -143,7 +143,7 @@ class DocumentProvider extends ChangeNotifier {
       jsonString = File(filePath).readAsStringSync();
     } else {
       final bytes = File(filePath).readAsBytesSync();
-      final String encodedData = base64Encode(bytes).replaceAll("/", "_");
+      final String encodedData = base64UrlEncode(bytes);
       final String uri = Uri.encodeFull(
         "http://localhost:8080/api/parse/$encodedData",
       );

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import io.github.tdh8316.hwp_editor.parser.HWPParser
 import io.github.tdh8316.hwp_editor.parser.datamodel.HWPDataModel
 import io.github.tdh8316.hwp_editor.writer.Writer
-import org.apache.tomcat.util.codec.binary.Base64
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.util.*
 
 @RestController
 @RequestMapping("/api")
@@ -36,9 +36,7 @@ class ContentsController {
         @PathVariable(value = "byteArrayData") _encodedByteArrayData: String,
     ): ResponseEntity<String> {
         // base64 형식의 데이터를 바이트 배열로 변환
-        val byteArrayData = Base64.decodeBase64(
-            _encodedByteArrayData.replace("_", "/"),
-        )
+        val byteArrayData = Base64.getUrlDecoder().decode(_encodedByteArrayData)
         // 인자로 전달된 바이트스트림으로 입력 스트림 생성
         val stream = ByteArrayInputStream(byteArrayData)
 
@@ -58,8 +56,7 @@ class ContentsController {
         @PathVariable(value = "jsonString") _encodedJsonString: String,
     ): ResponseEntity<ByteArray> {
         // base64 형식의 데이터를 json 문자열의 문자열로 변환
-        val jsonString: String = Base64.decodeBase64(_encodedJsonString)
-            .toString(Charsets.UTF_8)
+        val jsonString = String(Base64.getUrlDecoder().decode(_encodedJsonString), Charsets.UTF_8)
 
         // json 문자열에서 hwp 데이터 모델 생성
         val parsedDocument: HWPDataModel = Gson().fromJson(
