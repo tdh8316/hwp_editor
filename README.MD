@@ -2,6 +2,8 @@
 
 Open Source cross-platform HANCOM Office document editor.
 
+![screenshot](./docs/screenshot.png)
+
 Please read [documents(Korean)](docs/index.md)
 
 ## Acknowledgements
