@@ -120,6 +120,9 @@ class Writer {
             } else {
                 hwpFile.bodyText.sectionList.last()
             }
+            // Tricky
+            currentSection.paragraphs.first().lineSeg.lineSegItemList.first().lineHeight = 0
+            currentSection.paragraphs.first().lineSeg.lineSegItemList.first().textPartHeight = 0
             for (paragraph in section.paragraphs) {
                 val currentParagraph = currentSection.addNewParagraph()
                 buildParagraph(currentParagraph, paragraph)
