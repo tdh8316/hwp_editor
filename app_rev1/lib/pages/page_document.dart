@@ -148,6 +148,7 @@ class DocumentPage extends StatelessWidget {
                     onPressed: () => showDialog(
                       context: context,
                       builder: (_) {
+                        read.d.commitChanges();
                         return ContentDialog(
                           content: TextBox(
                             maxLines: null,
@@ -161,7 +162,7 @@ class DocumentPage extends StatelessWidget {
                           ),
                           actions: [
                             Button(
-                              child: const Text('Ok'),
+                              child: const Text("Ok"),
                               onPressed: () {
                                 Navigator.pop(context);
                               },

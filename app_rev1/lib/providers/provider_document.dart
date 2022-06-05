@@ -129,6 +129,7 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> saveHWPDocument() async {
+    d.commitChanges();
     final String encodedData = base64UrlEncode(
       utf8.encode(jsonEncode(d.jsonData)),
     );
@@ -144,6 +145,7 @@ class DocumentProvider extends ChangeNotifier {
   }
 
   Future<void> saveHWPDocumentOnLocalHost() async {
+    d.commitChanges();
     final String encodedData = base64UrlEncode(
       utf8.encode(jsonEncode(d.jsonData)),
     );
@@ -308,16 +310,27 @@ class DocumentProvider extends ChangeNotifier {
         else if (lastTextStyle != currentTextStyle) {
           // 커서가 맨 앞에 있을 때
           if (lastCursorIndex == 0) {
-            charShapes.insert(
-              0,
-              [
-                lastCursorIndex,
-                currentCharShapeReferenceValue,
-              ],
-            );
-            // 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
-            for (List next in charShapes.slice(lastCharShapeIndex + 1)) {
-              next[0] += diffChar.length;
+            if (charShapes.length <= 1) {
+              charShapes.clear();
+              charShapes.insert(
+                0,
+                [
+                  lastCursorIndex,
+                  currentCharShapeReferenceValue,
+                ],
+              );
+            } else {
+              charShapes.insert(
+                0,
+                [
+                  lastCursorIndex,
+                  currentCharShapeReferenceValue,
+                ],
+              );
+              // 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
+              for (List next in charShapes.slice(lastCharShapeIndex + 1)) {
+                next[0] += diffChar.length;
+              }
             }
           }
           // 여기가 마지막 charShapeIndex 일 때

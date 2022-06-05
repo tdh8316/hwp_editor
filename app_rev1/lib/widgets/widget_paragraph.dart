@@ -28,8 +28,9 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
     final DocumentProvider watch = context.watch<DocumentProvider>();
     paragraphController = read.d.paragraphControllers[widget.paragraphIndex];
     _prevText = paragraphController.text;
-    final Map paraShape =
-        read.d.getParaShapeAt(paragraphController.paraShapeId);
+    final Map paraShape = read.d.getParaShapeAt(
+      paragraphController.paraShapeId,
+    );
     return IntrinsicHeight(
       child: TextField(
         focusNode: watch.d.paragraphFocusNodes[widget.paragraphIndex]
@@ -38,22 +39,19 @@ class _ParagraphWidgetState extends State<ParagraphWidget> {
         decoration: const InputDecoration(
           hintText: null,
           fillColor: Colors.white,
+          hoverColor: Colors.white,
           filled: true,
           isDense: true,
           border: InputBorder.none,
-          contentPadding: EdgeInsets.only(bottom: 6),
-          hoverColor: Colors.white,
+          contentPadding: EdgeInsets.only(bottom: 8),
         ),
         style: watch.currentTextStyle,
-        strutStyle: StrutStyle(
-          height: paraShape["lineSpace"] / 100.0,
-        ),
         selectionHeightStyle: BoxHeightStyle.max,
         textAlign: getTextAlign(paraShape["alignment"]),
+        textAlignVertical: TextAlignVertical.top,
         maxLines: null,
         expands: true,
         cursorColor: Colors.black,
-        // TODO: Keyboard arrow detector
         onTap: () => read.onParagraphCursorChanged(paragraphController),
         onChanged: (String text) {
           read.onParagraphTextChanged(
@@ -87,6 +85,7 @@ class ParagraphController extends TextEditingController {
     TextStyle? style,
     required bool withComposing,
   }) {
+    final HWPDocumentModel d = context.read<DocumentProvider>().d;
     List<TextSpan> children = [];
     List<String> matches = [];
     String tmpMatch = "";
@@ -103,19 +102,7 @@ class ParagraphController extends TextEditingController {
       children.add(
         TextSpan(
           text: pair[0] as String,
-          style: context
-              .read<DocumentProvider>()
-              .d
-              .getTextStyleFromCharShape(
-                pair[1][1] as int,
-              )
-              .copyWith(
-                height: context
-                        .read<DocumentProvider>()
-                        .d
-                        .getParaShapeAt(paraShapeId)["lineSpace"] /
-                    100.0,
-              ),
+          style: d.getTextStyleFromCharShape(pair[1][1] as int),
         ),
       );
     }

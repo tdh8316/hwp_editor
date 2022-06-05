@@ -8,6 +8,36 @@ class HWPDocumentModel {
 
   Map<String, dynamic> get jsonData => _jsonData;
 
+  void commitChanges() {
+    for (Map paragraph in getParagraphs()) {
+      final Map lineSeg = Map<String, int>.from(paragraph["lineSeg"][0]);
+      for (int charShapeRef in paragraph["charShapes"].map((e) => e[1])) {
+        final TextStyle style = getTextStyleFromCharShape(charShapeRef);
+        final int newHeight = (style.fontSize! * 100).toInt();
+        if (newHeight > lineSeg["lineHeight"]) {
+          lineSeg["lineHeight"] = newHeight;
+        }
+        if (newHeight > lineSeg["textPartHeight"]) {
+          lineSeg["textPartHeight"] = newHeight;
+        }
+
+        final int newDLTLVP = (85 * style.fontSize!).toInt();
+        if (newDLTLVP > lineSeg["distanceBaseLineToLineVerticalPosition"]) {
+          lineSeg["distanceBaseLineToLineVerticalPosition"] =
+              (85 * style.fontSize!).toInt();
+        }
+
+        final int newLS = (60 * style.fontSize!).toInt();
+        if (newLS > lineSeg["lineSpace"]) {
+          lineSeg["lineSpace"] = (60 * style.fontSize!).toInt();
+        }
+
+        // TODO: lineVerticalPosition
+      }
+      paragraph["lineSeg"][0] = lineSeg;
+    }
+  }
+
   void loadDocument(Map<String, dynamic> data) {
     _jsonData = data;
     paragraphControllers.clear();
@@ -48,8 +78,14 @@ class HWPDocumentModel {
       [0, currentParagraphController.charShapes.last.last],
     ];
 
-    // TODO: Create its own LineSeg
-    final List newLineSeg = (getCurrentParagraph()["lineSeg"] as List).toList();
+    final Map newLineSeg = {
+      "textStartPosition": 0,
+      "lineVerticalPosition": 0,
+      "lineHeight": 0,
+      "textPartHeight": 0,
+      "distanceBaseLineToLineVerticalPosition": 0,
+      "lineSpace": 0,
+    };
     final int newParaShapeId = currentParagraphController.paraShapeId;
     paragraphControllers.insert(
       newIndex,
@@ -64,7 +100,7 @@ class HWPDocumentModel {
       "charShapes": newCharShapes,
       "paraShapeId": newParaShapeId,
       "styleId": 0,
-      "lineSeg": newLineSeg,
+      "lineSeg": [newLineSeg],
     };
     getParagraphs().insert(
       newIndex,
