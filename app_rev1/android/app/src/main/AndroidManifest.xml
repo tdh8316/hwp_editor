@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.github.tdh8316.hwp_editor.hwp_editor_app.app_rev1">
+    package="io.github.tdh8316.hwp_editor_app">
    <application
-        android:label="app_rev1"
+        android:label="hwp_editor_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

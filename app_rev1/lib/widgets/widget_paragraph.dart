@@ -1,7 +1,7 @@
 import 'dart:ui';
 
-import 'package:app_rev1/models/model_document.dart';
-import 'package:app_rev1/providers/provider_document.dart';
+import 'package:hwp_editor_app/models/model_document.dart';
+import 'package:hwp_editor_app/providers/provider_document.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:app_rev1/models/model_document.dart';
-import 'package:app_rev1/models/model_server.dart';
-import 'package:app_rev1/widgets/widget_paragraph.dart';
+import 'package:hwp_editor_app/models/model_document.dart';
+import 'package:hwp_editor_app/models/model_server.dart';
+import 'package:hwp_editor_app/widgets/widget_paragraph.dart';
 import 'package:collection/collection.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fluent_ui/fluent_ui.dart' show FlyoutController;

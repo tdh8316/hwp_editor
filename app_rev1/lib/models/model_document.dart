@@ -1,5 +1,5 @@
-import 'package:app_rev1/models/model_empty.dart';
-import 'package:app_rev1/widgets/widget_paragraph.dart';
+import 'package:hwp_editor_app/models/model_empty.dart';
+import 'package:hwp_editor_app/widgets/widget_paragraph.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 

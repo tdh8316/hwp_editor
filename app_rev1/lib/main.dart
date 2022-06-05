@@ -1,4 +1,4 @@
-import 'package:app_rev1/pages/page_document.dart';
+import 'package:hwp_editor_app/pages/page_document.dart';
 import 'package:fluent_ui/fluent_ui.dart' show FluentApp;
 import 'package:flutter/material.dart';
 
