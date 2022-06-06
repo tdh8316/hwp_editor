@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:collection/collection.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:fluent_ui/fluent_ui.dart'
+    show FlyoutController, ContentDialog, TextBox, Button, showDialog;
+import 'package:flutter/material.dart' hide showDialog;
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:hwp_editor_app/models/model_document.dart';
 import 'package:hwp_editor_app/models/model_server.dart';
 import 'package:hwp_editor_app/widgets/widget_paragraph.dart';
-import 'package:collection/collection.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:fluent_ui/fluent_ui.dart' show FlyoutController;
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
 
 class DocumentProvider extends ChangeNotifier {
   String _filePath = "./New_Document.hwp";
@@ -275,9 +276,7 @@ class DocumentProvider extends ChangeNotifier {
 
       // 텍스트가 추가됐을 때
       if (text.length > prevText.length) {
-        final int lastCursorIndex = controller.getCursorPosition(
-          adjust: 1,
-        );
+        final int lastCursorIndex = controller.getCursorPosition(adjust: 1);
         final int lastCharShapeIndex = controller.getCurrentCharShapeIndex(
           adjust: 1,
         );
@@ -314,18 +313,12 @@ class DocumentProvider extends ChangeNotifier {
               charShapes.clear();
               charShapes.insert(
                 0,
-                [
-                  lastCursorIndex,
-                  currentCharShapeReferenceValue,
-                ],
+                [lastCursorIndex, currentCharShapeReferenceValue],
               );
             } else {
               charShapes.insert(
                 0,
-                [
-                  lastCursorIndex,
-                  currentCharShapeReferenceValue,
-                ],
+                [lastCursorIndex, currentCharShapeReferenceValue],
               );
               // 뒤의 charShape 의 position 만 추가된 문자열 길이만큼 미뤄줌
               for (List next in charShapes.slice(lastCharShapeIndex + 1)) {
@@ -336,10 +329,7 @@ class DocumentProvider extends ChangeNotifier {
           // 여기가 마지막 charShapeIndex 일 때
           else if (charShapes.length <= lastCharShapeIndex + 1) {
             charShapes.add(
-              [
-                lastCursorIndex,
-                currentCharShapeReferenceValue,
-              ],
+              [lastCursorIndex, currentCharShapeReferenceValue],
             );
             charShapes.add(
               charShapes[lastCharShapeIndex].toList()
@@ -349,10 +339,7 @@ class DocumentProvider extends ChangeNotifier {
             // 일단 현재 위치에 현재 textStyle 에 상응하는 charShape 추가
             charShapes.insert(
               lastCharShapeIndex + 1,
-              [
-                lastCursorIndex,
-                currentCharShapeReferenceValue,
-              ],
+              [lastCursorIndex, currentCharShapeReferenceValue],
             );
 
             if (charShapes[lastCharShapeIndex + 2][0] != lastCursorIndex) {
@@ -391,6 +378,7 @@ class DocumentProvider extends ChangeNotifier {
         final List<int> targetIndex = [];
         if (charShapes.length >= charShapeIndex + 1) {
           for (int i = charShapeIndex + 1; i < charShapes.length; i++) {
+            // TODO: Maybe diffChar.length?
             charShapes[i][0] -= 1;
             if (charShapes[i - 1][0] == charShapes[i][0]) {
               targetIndex.add(i - 1);
@@ -410,5 +398,38 @@ class DocumentProvider extends ChangeNotifier {
 
     notifyListeners();
     // print("result:$_charShapes");
+  }
+
+  Future<void> showJsonData(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (_) {
+        d.commitChanges();
+        return ContentDialog(
+          constraints: BoxConstraints(
+            maxWidth: MediaQuery.of(context).size.width / 2,
+          ),
+          content: TextBox(
+            maxLines: null,
+            expands: true,
+            readOnly: true,
+            controller: TextEditingController(
+              text: const JsonEncoder.withIndent("  ").convert(
+                d.jsonData,
+              ),
+            ),
+            style: const TextStyle(fontFamily: "Consolas"),
+          ),
+          actions: [
+            Button(
+              child: const Text("Ok"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

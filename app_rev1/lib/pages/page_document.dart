@@ -1,17 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
 
-import 'package:hwp_editor_app/models/model_document.dart';
-import 'package:hwp_editor_app/providers/provider_document.dart';
-import 'package:hwp_editor_app/widgets/widget_paragraph.dart';
 import 'package:fluent_ui/fluent_ui.dart'
     show
-        Button,
         CommandBar,
         CommandBarBuilderItem,
         CommandBarButton,
         CommandBarSeparator,
-        ContentDialog,
         DropDownButton,
         FluentIcons,
         Flyout,
@@ -19,10 +13,11 @@ import 'package:fluent_ui/fluent_ui.dart'
         MenuFlyout,
         MenuFlyoutItem,
         MenuFlyoutSeparator,
-        TextBox,
-        ToggleButton,
-        showDialog;
-import 'package:flutter/material.dart' hide showDialog;
+        ToggleButton;
+import 'package:flutter/material.dart';
+import 'package:hwp_editor_app/models/model_document.dart';
+import 'package:hwp_editor_app/providers/provider_document.dart';
+import 'package:hwp_editor_app/widgets/widget_paragraph.dart';
 import 'package:provider/provider.dart';
 
 class DocumentPage extends StatelessWidget {
@@ -113,70 +108,49 @@ class DocumentPage extends StatelessWidget {
     return CommandBar(
       primaryItems: [
         CommandBarBuilderItem(
-          builder: (context, mode, w) => Flyout(
-            openMode: FlyoutOpenMode.press,
-            controller: read.flyoutController,
-            content: (BuildContext context) {
-              return MenuFlyout(
-                items: [
-                  MenuFlyoutItem(
-                    text: const Text("열기"),
-                    leading: const Icon(FluentIcons.open_file),
-                    onPressed: () async => await read.openHWPDocument(),
-                  ),
-                  MenuFlyoutItem(
-                    text: const Text("저장"),
-                    leading: const Icon(FluentIcons.save),
-                    onPressed: () async => await read.saveHWPDocument(),
-                  ),
-                  const MenuFlyoutSeparator(),
-                  MenuFlyoutItem(
-                    text: const Text("DEBUG: 열기(localhost)"),
-                    leading: const Icon(FluentIcons.open_file),
-                    onPressed: () async =>
-                        await read.loadHWPDocumentOnLocalHost(),
-                  ),
-                  MenuFlyoutItem(
-                    text: const Text("DEBUG: 저장(localhost)"),
-                    leading: const Icon(FluentIcons.save),
-                    onPressed: () async =>
-                        await read.saveHWPDocumentOnLocalHost(),
-                  ),
-                  MenuFlyoutItem(
-                    text: const Text("DEBUG: Show json data"),
-                    leading: const Icon(FluentIcons.device_bug),
-                    onPressed: () => showDialog(
-                      context: context,
-                      builder: (_) {
-                        read.d.commitChanges();
-                        return ContentDialog(
-                          content: TextBox(
-                            maxLines: null,
-                            expands: true,
-                            readOnly: true,
-                            controller: TextEditingController(
-                              text: const JsonEncoder.withIndent("  ").convert(
-                                read.d.jsonData,
-                              ),
-                            ),
-                          ),
-                          actions: [
-                            Button(
-                              child: const Text("Ok"),
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                            ),
-                          ],
-                        );
+          builder: (BuildContext context, _, Widget w) {
+            return Flyout(
+              openMode: FlyoutOpenMode.press,
+              controller: read.flyoutController,
+              content: (BuildContext context) {
+                return MenuFlyout(
+                  items: [
+                    MenuFlyoutItem(
+                      text: const Text("열기"),
+                      leading: const Icon(FluentIcons.open_file),
+                      onPressed: () async => await read.openHWPDocument(),
+                    ),
+                    MenuFlyoutItem(
+                      text: const Text("저장"),
+                      leading: const Icon(FluentIcons.save),
+                      onPressed: () async => await read.saveHWPDocument(),
+                    ),
+                    const MenuFlyoutSeparator(),
+                    MenuFlyoutItem(
+                      text: const Text("DEBUG: 열기(localhost)"),
+                      leading: const Icon(FluentIcons.open_file),
+                      onPressed: () async {
+                        await read.loadHWPDocumentOnLocalHost();
                       },
                     ),
-                  ),
-                ],
-              );
-            },
-            child: w,
-          ),
+                    MenuFlyoutItem(
+                      text: const Text("DEBUG: 저장(localhost)"),
+                      leading: const Icon(FluentIcons.save),
+                      onPressed: () async {
+                        await read.saveHWPDocumentOnLocalHost();
+                      },
+                    ),
+                    MenuFlyoutItem(
+                      text: const Text("DEBUG: Show json data"),
+                      leading: const Icon(FluentIcons.device_bug),
+                      onPressed: () => read.showJsonData(context),
+                    ),
+                  ],
+                );
+              },
+              child: w,
+            );
+          },
           wrappedItem: CommandBarButton(
             icon: const Icon(FluentIcons.document),
             label: const Text("파일"),
